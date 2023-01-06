@@ -376,37 +376,27 @@ async def main() -> None:
     socks5 = cfg["SOCKS5"]
     socks4_sources = socks4.get("Sources")
     http_sources = http.get("Sources")
-    await ProxyScraperChecker(
-        timeout=general.getfloat("Timeout", 10),
-        max_connections=general.getint("MaxConnections", 900),
-        sort_by_speed=general.getboolean("SortBySpeed", True),
-        save_path=general.get("SavePath", ""),
-        proxies=folders.getboolean("proxies", True),
-        proxies_anonymous=folders.getboolean("proxies_anonymous", True),
-        proxies_geolocation=folders.getboolean("proxies_geolocation", True),
-        proxies_geolocation_anonymous=folders.getboolean(
-            "proxies_geolocation_anonymous", True
-        ),
-        http_sources=http_sources
-        if http.getboolean("Enabled", True)
-        else None,
-        socks4_sources=socks4_sources
-        if socks4.getboolean("Enabled", True)
-        else None,
-        socks5_sources=socks5.get("Sources")
-        if socks5.getboolean("Enabled", True)
-        else None,
-    ).main()
+    socks5_sources = socks5.get("Sources")
+    checker = ProxyScraperChecker(timeout=general.getfloat("Timeout", 10),
+                                  max_connections=general.getint("MaxConnections", 900),
+                                  sort_by_speed=general.getboolean("SortBySpeed", True),
+                                  save_path=general.get("SavePath", ""), proxies=folders.getboolean("proxies", True),
+                                  proxies_anonymous=folders.getboolean("proxies_anonymous", True),
+                                  proxies_geolocation=folders.getboolean("proxies_geolocation", True),
+                                  proxies_geolocation_anonymous=folders.getboolean("proxies_geolocation_anonymous",
+                                                                                   True),
+                                  http_sources=http_sources if http.getboolean("Enabled", True) else None,
+                                  socks4_sources=socks4_sources if socks4.getboolean("Enabled", True) else None,
+                                  socks5_sources=socks5_sources if socks5.getboolean("Enabled", True) else None, )
+    await checker.main()
 
     proxies_folder = r'C:\Users\Administrator\Desktop\proxy-scraper-checker\proxies'
     parsed_path = pathlib.Path(proxies_folder, 'parsed.txt')
     if parsed_path.exists():
         os.remove(parsed_path)
-
     proxies = []
     for file in os.listdir(proxies_folder):
         proxies += [f'{file[:-4]}://{proxy}' for proxy in get_proxies(Path(proxies_folder, file))]
-
     target_database_proxies_folder = r'C:\Users\Administrator\Desktop\targetDatabaseProject\proxies'
     parsed_path = pathlib.Path(target_database_proxies_folder, 'parsed.txt')
     save_proxies(parsed_path, proxies)
