@@ -1,13 +1,11 @@
 import asyncio
 import os
 import pathlib
-import re
-from configparser import ConfigParser
 from pathlib import Path
 from random import shuffle
 from shutil import rmtree
 from time import perf_counter, sleep
-from typing import Callable, Dict, List, Optional, Set, Tuple, Union
+from typing import Callable, Dict, List, Set, Tuple, Union
 
 from aiohttp import ClientSession
 from aiohttp_socks import ProxyConnector
@@ -22,35 +20,17 @@ from rich.progress import (
 )
 from rich.table import Table
 
-REGEX_PATTERN = re.compile(
-    r"(?:^|\D)?(("
-    + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255
-    + r"\."
-    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-    + r"\."
-    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-    + r"\."
-    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-    + r"):"
-    + (
-            r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
-            + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])"
-    )  # 0-65535
-    + r")(?:\D|$)"
+from proxy_parser.config import (
+    REGEX_PATTERN,
+    TIMEOUT,
+    MAX_CONNECTIONS,
+    SORT_BY_SPEED,
+    SAVE_PATH,
+    FOLDER_GETBOOLEAN,
+    PROXIES_ANONYMOUS,
+    PROXIES_GEOLOCATION,
+    PROXIES_GEOLOCATION_ANONYMOUS
 )
-cfg = ConfigParser(interpolation=None)
-cfg.read("config.ini", encoding="utf-8")
-general = cfg["General"]
-folders = cfg["Folders"]
-
-timeout = general.getfloat("Timeout", 10)
-max_connections = general.getint("MaxConnections", 900)
-sort_by_speed = general.getboolean("SortBySpeed", True)
-save_path = general.get("SavePath", "")
-folders_getboolean = folders.getboolean("proxies", True)
-proxies_anonymous = folders.getboolean("proxies_anonymous", True)
-proxies_geolocation = folders.getboolean("proxies_geolocation", True)
-proxies_geolocation_anonymous = folders.getboolean("proxies_geolocation_anonymous", True)
 
 
 class Proxy:
@@ -121,20 +101,16 @@ class ProxyScraperChecker:
     )
 
     def __init__(
-            self, timeout: float, max_connections: int, sort_by_speed: bool, save_path: str, proxies: bool,
-            proxies_anonymous: bool,
-            proxies_geolocation: bool,
-            proxies_geolocation_anonymous: bool,
+            self,
             http_sources: list,
             socks4_sources: list,
-            socks5_sources: list,
-            console: Optional[Console] = Console()):
-        self.path = Path(save_path)
+            socks5_sources: list):
+        self.path = Path(SAVE_PATH)
         folders_mapping = {
-            "proxies": proxies,
-            "proxies_anonymous": proxies_anonymous,
-            "proxies_geolocation": proxies_geolocation,
-            "proxies_geolocation_anonymous": proxies_geolocation_anonymous,
+            "proxies": FOLDER_GETBOOLEAN,
+            "proxies_anonymous": PROXIES_ANONYMOUS,
+            "proxies_geolocation": PROXIES_GEOLOCATION,
+            "proxies_geolocation_anonymous": PROXIES_GEOLOCATION_ANONYMOUS,
         }
         self.all_folders = tuple(Folder(self.path, folder_name) for folder_name in folders_mapping)
         self.enabled_folders = tuple(folder for folder in self.all_folders if folders_mapping[folder.path.name])
@@ -146,10 +122,10 @@ class ProxyScraperChecker:
         }
         self.proxies: Dict[str, Set[Proxy]] = {proto: set() for proto in self.sources}
         self.proxies_count = {proto: 0 for proto in self.sources}
-        self.sem = asyncio.Semaphore(max_connections)
-        self.timeout = timeout
-        self.sort_by_speed = sort_by_speed
-        self.console = console
+        self.sem = asyncio.Semaphore(MAX_CONNECTIONS)
+        self.timeout = TIMEOUT
+        self.sort_by_speed = SORT_BY_SPEED
+        self.console = Console()
 
     async def fetch_source(self, s: ClientSession, source: str, proto: str, progress: Progress, task: TaskID) -> None:
         source = source.strip()
@@ -302,28 +278,20 @@ async def main() -> None:
     socks4_sources = get_list_from_file('sources/socks4.txt')
     socks5_sources = get_list_from_file('sources/socks5.txt')
     checker = ProxyScraperChecker(
-        timeout=timeout,
-        max_connections=max_connections,
-        sort_by_speed=sort_by_speed,
-        save_path=save_path, proxies=folders_getboolean,
-        proxies_anonymous=proxies_anonymous,
-        proxies_geolocation=proxies_geolocation,
-        proxies_geolocation_anonymous=proxies_geolocation_anonymous,
         http_sources=http_sources,
         socks4_sources=socks4_sources,
         socks5_sources=socks5_sources
     )
     await checker.main()
 
-    proxies_folder = r'C:\Users\Administrator\Desktop\proxy-scraper-checker\proxies'
-    parsed_path = pathlib.Path(proxies_folder, 'parsed.txt')
+    parsed_path = pathlib.Path(SAVE_PATH, 'parsed.txt')
     if parsed_path.exists():
         os.remove(parsed_path)
+
     proxies = []
-    for file in os.listdir(proxies_folder):
-        proxies += [f'{file[:-4]}://{proxy}' for proxy in get_list_from_file(Path(proxies_folder, file))]
-    target_database_proxies_folder = r'C:\Users\Administrator\Desktop\targetDatabaseProject\proxies'
-    parsed_path = pathlib.Path(target_database_proxies_folder, 'parsed.txt')
+    for file in os.listdir(SAVE_PATH):
+        proxies += [f'{file[:-4]}://{proxy}' for proxy in get_list_from_file(Path(SAVE_PATH, file))]
+    parsed_path = pathlib.Path(SAVE_PATH, 'parsed.txt')
     save_list_to_file(parsed_path, proxies)
 
 
