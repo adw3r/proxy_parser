@@ -38,28 +38,29 @@ REGEX_PATTERN = re.compile(
     )  # 0-65535
     + r")(?:\D|$)"
 )
+cfg = ConfigParser(interpolation=None)
+cfg.read("config.ini", encoding="utf-8")
+general = cfg["General"]
+folders = cfg["Folders"]
+
+timeout = general.getfloat("Timeout", 10)
+max_connections = general.getint("MaxConnections", 900)
+sort_by_speed = general.getboolean("SortBySpeed", True)
+save_path = general.get("SavePath", "")
+folders_getboolean = folders.getboolean("proxies", True)
+proxies_anonymous = folders.getboolean("proxies_anonymous", True)
+proxies_geolocation = folders.getboolean("proxies_geolocation", True)
+proxies_geolocation_anonymous = folders.getboolean("proxies_geolocation_anonymous", True)
 
 
 class Proxy:
-    __slots__ = (
-        "geolocation",
-        "ip",
-        "is_anonymous",
-        "socket_address",
-        "timeout",
-    )
+    __slots__ = ("geolocation", "ip", "is_anonymous", "socket_address", "timeout",)
 
     def __init__(self, socket_address: str, ip: str) -> None:
-        """
-        Args:
-            socket_address: ip:port
-        """
         self.socket_address = socket_address
         self.ip = ip
 
-    async def check(
-            self, sem: asyncio.Semaphore, proto: str, timeout: float
-    ) -> None:
+    async def check(self, sem: asyncio.Semaphore, proto: str, timeout: float) -> None:
         async with sem:
             proxy_url = f"{proto}://{self.socket_address}"
             start = perf_counter()
@@ -113,30 +114,14 @@ def natural_sort_key(proxy: Proxy) -> Tuple[int, ...]:
 
 
 class ProxyScraperChecker:
-    """HTTP, SOCKS4, SOCKS5 proxies scraper and checker."""
-
     __slots__ = (
-        "all_folders",
-        "console",
-        "enabled_folders",
-        "path",
-        "proxies_count",
-        "proxies",
-        "regex",
-        "sem",
+        "all_folders", "console", "enabled_folders", "path", "proxies_count", "proxies", "sem",
         "sort_by_speed",
-        "sources",
-        "timeout",
+        "sources", "timeout",
     )
 
     def __init__(
-            self,
-            *,
-            timeout: float,
-            max_connections: int,
-            sort_by_speed: bool,
-            save_path: str,
-            proxies: bool,
+            self, timeout: float, max_connections: int, sort_by_speed: bool, save_path: str, proxies: bool,
             proxies_anonymous: bool,
             proxies_geolocation: bool,
             proxies_geolocation_anonymous: bool,
@@ -155,35 +140,21 @@ class ProxyScraperChecker:
         self.enabled_folders = tuple(folder for folder in self.all_folders if folders_mapping[folder.path.name])
         if not self.enabled_folders:
             raise ValueError("all folders are disabled in the config")
-        self.regex = REGEX_PATTERN
-        self.sources = {proto: frozenset(filter(None, sources)) for proto, sources in
-                        (("http", http_sources), ("socks4", socks4_sources), ("socks5", socks5_sources)) if sources}
-        self.proxies: Dict[str, Set[Proxy]] = {
-            proto: set() for proto in self.sources
+        self.sources = {
+            proto: frozenset(filter(None, sources)) for proto, sources in
+            (("http", http_sources), ("socks4", socks4_sources), ("socks5", socks5_sources)) if sources
         }
+        self.proxies: Dict[str, Set[Proxy]] = {proto: set() for proto in self.sources}
         self.proxies_count = {proto: 0 for proto in self.sources}
         self.sem = asyncio.Semaphore(max_connections)
         self.timeout = timeout
         self.sort_by_speed = sort_by_speed
         self.console = console
 
-    async def fetch_source(
-            self,
-            session: ClientSession,
-            source: str,
-            proto: str,
-            progress: Progress,
-            task: TaskID,
-    ) -> None:
-        """Get proxies from source.
-
-        Args:
-            source: Proxy list URL.
-            proto: http/socks4/socks5.
-        """
+    async def fetch_source(self, s: ClientSession, source: str, proto: str, progress: Progress, task: TaskID) -> None:
         source = source.strip()
         try:
-            async with session.get(source, timeout=15) as response:
+            async with s.get(source, timeout=15) as response:
                 status = response.status
                 text = await response.text()
         except Exception as e:
@@ -193,7 +164,7 @@ class ProxyScraperChecker:
                 msg += f": {exc_str}"
             self.console.print(msg)
         else:
-            proxies = tuple(self.regex.finditer(text))
+            proxies = tuple(REGEX_PATTERN.finditer(text))
             if proxies:
                 for proxy in proxies:
                     proxy_obj = Proxy(proxy.group(1), proxy.group(2))
@@ -205,10 +176,7 @@ class ProxyScraperChecker:
                 self.console.print(msg)
         progress.update(task, advance=1)
 
-    async def check_proxy(
-            self, proxy: Proxy, proto: str, progress: Progress, task: TaskID
-    ) -> None:
-        """Check if proxy is alive."""
+    async def check_proxy(self, proxy: Proxy, proto: str, progress: Progress, task: TaskID) -> None:
         try:
             await proxy.check(self.sem, proto, self.timeout)
         except Exception as e:
@@ -229,12 +197,7 @@ class ProxyScraperChecker:
             )
             for proto, sources in self.sources.items()
         }
-        headers = {
-            "User-Agent": (
-                    "Mozilla/5.0 (Windows NT 10.0; rv:107.0)"
-                    + " Gecko/20100101 Firefox/107.0"
-            )
-        }
+        headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; rv:107.0) Gecko/20100101 Firefox/107.0"}
         async with ClientSession(headers=headers) as session:
             coroutines = (
                 self.fetch_source(
@@ -244,18 +207,14 @@ class ProxyScraperChecker:
                 for source in sources
             )
             await asyncio.gather(*coroutines)
-
-        # Remember total count so we could print it in the table
         for proto, proxies in self.proxies.items():
             self.proxies_count[proto] = len(proxies)
 
     async def check_all_proxies(self, progress: Progress) -> None:
         tasks = {
             proto: progress.add_task(
-                f"[yellow]Checker [red]:: [green]{proto.upper()}",
-                total=len(proxies),
-            )
-            for proto, proxies in self.proxies.items()
+                f"[yellow]Checker [red]:: [green]{proto.upper()}", total=len(proxies)
+            ) for proto, proxies in self.proxies.items()
         }
         coroutines = [
             self.check_proxy(proxy, proto, progress, tasks[proto])
@@ -266,7 +225,6 @@ class ProxyScraperChecker:
         await asyncio.gather(*coroutines)
 
     def save_proxies(self) -> None:
-        """Delete old proxies and save new ones."""
         sorted_proxies = self.sorted_proxies.items()
         for folder in self.all_folders:
             folder.remove()
@@ -340,20 +298,6 @@ def save_list_to_file(path: Path | str, proxies: list):
 
 
 async def main() -> None:
-    cfg = ConfigParser(interpolation=None)
-    cfg.read("config.ini", encoding="utf-8")
-    general = cfg["General"]
-    folders = cfg["Folders"]
-
-    timeout = general.getfloat("Timeout", 10)
-    max_connections = general.getint("MaxConnections", 900)
-    sort_by_speed = general.getboolean("SortBySpeed", True)
-    save_path = general.get("SavePath", "")
-    folders_getboolean = folders.getboolean("proxies", True)
-    proxies_anonymous = folders.getboolean("proxies_anonymous", True)
-    proxies_geolocation = folders.getboolean("proxies_geolocation", True)
-    proxies_geolocation_anonymous = folders.getboolean("proxies_geolocation_anonymous", True)
-
     http_sources = get_list_from_file('sources/http.txt')
     socks4_sources = get_list_from_file('sources/socks4.txt')
     socks5_sources = get_list_from_file('sources/socks5.txt')
