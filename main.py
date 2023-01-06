@@ -2,6 +2,23 @@ import asyncio
 import os
 import pathlib
 import re
+
+REGEX_PATTERN = re.compile(
+    r"(?:^|\D)?(("
+    + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255
+    + r"\."
+    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
+    + r"\."
+    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
+    + r"\."
+    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
+    + r"):"
+    + (
+            r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
+            + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])"
+    )  # 0-65535
+    + r")(?:\D|$)"
+)
 from configparser import ConfigParser
 from pathlib import Path
 from random import shuffle
@@ -123,24 +140,10 @@ class ProxyScraperChecker:
             proxies_anonymous: bool,
             proxies_geolocation: bool,
             proxies_geolocation_anonymous: bool,
-            http_sources: Optional[str],
-            socks4_sources: Optional[str],
-            socks5_sources: Optional[str],
-            console: Optional[Console] = None,
-    ) -> None:
-        """HTTP, SOCKS4, SOCKS5 proxies scraper and checker.
-
-        Args:
-            timeout: How many seconds to wait for the connection. The
-                higher the number, the longer the check will take and
-                the more proxies you get.
-            max_connections: Maximum concurrent connections. Don't set
-                higher than 900, please.
-            sort_by_speed: Set to False to sort proxies alphabetically.
-            save_path: Path to the folder where the proxy folders will
-                be saved. Leave empty to save the proxies to the current
-                directory.
-        """
+            http_sources: list,
+            socks4_sources: list,
+            socks5_sources: list,
+            console: Optional[Console] = Console()):
         self.path = Path(save_path)
         folders_mapping = {
             "proxies": proxies,
@@ -148,51 +151,20 @@ class ProxyScraperChecker:
             "proxies_geolocation": proxies_geolocation,
             "proxies_geolocation_anonymous": proxies_geolocation_anonymous,
         }
-        self.all_folders = tuple(
-            Folder(self.path, folder_name) for folder_name in folders_mapping
-        )
-        self.enabled_folders = tuple(
-            folder
-            for folder in self.all_folders
-            if folders_mapping[folder.path.name]
-        )
+        self.all_folders = tuple(Folder(self.path, folder_name) for folder_name in folders_mapping)
+        self.enabled_folders = tuple(folder for folder in self.all_folders if folders_mapping[folder.path.name])
         if not self.enabled_folders:
             raise ValueError("all folders are disabled in the config")
-
-        self.regex = re.compile(
-            r"(?:^|\D)?(("
-            + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255
-            + r"\."
-            + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-            + r"\."
-            + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-            + r"\."
-            + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-            + r"):"
-            + (
-                    r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
-                    + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])"
-            )  # 0-65535
-            + r")(?:\D|$)"
-        )
-
-        self.sort_by_speed = sort_by_speed
-        self.timeout = timeout
-        self.sources = {
-            proto: frozenset(filter(None, sources.splitlines()))
-            for proto, sources in (
-                ("http", http_sources),
-                ("socks4", socks4_sources),
-                ("socks5", socks5_sources),
-            )
-            if sources
-        }
+        self.regex = REGEX_PATTERN
+        self.sources = {proto: frozenset(filter(None, sources)) for proto, sources in (("http", http_sources), ("socks4", socks4_sources), ("socks5", socks5_sources)) if sources}
         self.proxies: Dict[str, Set[Proxy]] = {
             proto: set() for proto in self.sources
         }
         self.proxies_count = {proto: 0 for proto in self.sources}
-        self.console = console or Console()
         self.sem = asyncio.Semaphore(max_connections)
+        self.timeout = timeout
+        self.sort_by_speed = sort_by_speed
+        self.console = console
 
     async def fetch_source(
             self,
@@ -356,12 +328,12 @@ class ProxyScraperChecker:
         )
 
 
-def get_proxies(path: Path | str) -> list:
+def get_list_from_file(path: Path | str) -> list:
     with open(path) as file:
-        return file.read().split('\n')
+        return list(set(file.read().split('\n')))
 
 
-def save_proxies(path: Path | str, proxies: list):
+def save_list_to_file(path: Path | str, proxies: list):
     with open(path, 'w') as file:
         file.write('\n'.join(proxies))
 
@@ -374,20 +346,32 @@ async def main() -> None:
     http = cfg["HTTP"]
     socks4 = cfg["SOCKS4"]
     socks5 = cfg["SOCKS5"]
-    socks4_sources = socks4.get("Sources")
-    http_sources = http.get("Sources")
-    socks5_sources = socks5.get("Sources")
-    checker = ProxyScraperChecker(timeout=general.getfloat("Timeout", 10),
-                                  max_connections=general.getint("MaxConnections", 900),
-                                  sort_by_speed=general.getboolean("SortBySpeed", True),
-                                  save_path=general.get("SavePath", ""), proxies=folders.getboolean("proxies", True),
-                                  proxies_anonymous=folders.getboolean("proxies_anonymous", True),
-                                  proxies_geolocation=folders.getboolean("proxies_geolocation", True),
-                                  proxies_geolocation_anonymous=folders.getboolean("proxies_geolocation_anonymous",
-                                                                                   True),
-                                  http_sources=http_sources if http.getboolean("Enabled", True) else None,
-                                  socks4_sources=socks4_sources if socks4.getboolean("Enabled", True) else None,
-                                  socks5_sources=socks5_sources if socks5.getboolean("Enabled", True) else None, )
+
+
+
+    timeout = general.getfloat("Timeout", 10)
+    max_connections = general.getint("MaxConnections", 900)
+    sort_by_speed = general.getboolean("SortBySpeed", True)
+    save_path = general.get("SavePath", "")
+    folders_getboolean = folders.getboolean("proxies", True)
+    proxies_anonymous = folders.getboolean("proxies_anonymous", True)
+    proxies_geolocation = folders.getboolean("proxies_geolocation", True)
+    proxies_geolocation_anonymous = folders.getboolean("proxies_geolocation_anonymous", True)
+    http_sources = get_list_from_file('sources/http.txt')
+    socks4_sources = get_list_from_file('sources/socks4.txt')
+    socks5_sources = get_list_from_file('sources/socks5.txt')
+    checker = ProxyScraperChecker(
+        timeout=timeout,
+        max_connections=max_connections,
+        sort_by_speed=sort_by_speed,
+        save_path=save_path, proxies=folders_getboolean,
+        proxies_anonymous=proxies_anonymous,
+        proxies_geolocation=proxies_geolocation,
+        proxies_geolocation_anonymous=proxies_geolocation_anonymous,
+        http_sources=http_sources,
+        socks4_sources=socks4_sources,
+        socks5_sources=socks5_sources
+    )
     await checker.main()
 
     proxies_folder = r'C:\Users\Administrator\Desktop\proxy-scraper-checker\proxies'
@@ -396,10 +380,10 @@ async def main() -> None:
         os.remove(parsed_path)
     proxies = []
     for file in os.listdir(proxies_folder):
-        proxies += [f'{file[:-4]}://{proxy}' for proxy in get_proxies(Path(proxies_folder, file))]
+        proxies += [f'{file[:-4]}://{proxy}' for proxy in get_list_from_file(Path(proxies_folder, file))]
     target_database_proxies_folder = r'C:\Users\Administrator\Desktop\targetDatabaseProject\proxies'
     parsed_path = pathlib.Path(target_database_proxies_folder, 'parsed.txt')
-    save_proxies(parsed_path, proxies)
+    save_list_to_file(parsed_path, proxies)
 
 
 if __name__ == "__main__":
