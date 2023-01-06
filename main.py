@@ -2,23 +2,6 @@ import asyncio
 import os
 import pathlib
 import re
-
-REGEX_PATTERN = re.compile(
-    r"(?:^|\D)?(("
-    + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255
-    + r"\."
-    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-    + r"\."
-    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-    + r"\."
-    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
-    + r"):"
-    + (
-            r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
-            + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])"
-    )  # 0-65535
-    + r")(?:\D|$)"
-)
 from configparser import ConfigParser
 from pathlib import Path
 from random import shuffle
@@ -38,6 +21,23 @@ from rich.progress import (
     TextColumn,
 )
 from rich.table import Table
+
+REGEX_PATTERN = re.compile(
+    r"(?:^|\D)?(("
+    + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255
+    + r"\."
+    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
+    + r"\."
+    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
+    + r"\."
+    + r"(?:\d|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 0-255
+    + r"):"
+    + (
+            r"(?:\d|[1-9]\d{1,3}|[1-5]\d{4}|6[0-4]\d{3}"
+            + r"|65[0-4]\d{2}|655[0-2]\d|6553[0-5])"
+    )  # 0-65535
+    + r")(?:\D|$)"
+)
 
 
 class Proxy:
@@ -156,7 +156,8 @@ class ProxyScraperChecker:
         if not self.enabled_folders:
             raise ValueError("all folders are disabled in the config")
         self.regex = REGEX_PATTERN
-        self.sources = {proto: frozenset(filter(None, sources)) for proto, sources in (("http", http_sources), ("socks4", socks4_sources), ("socks5", socks5_sources)) if sources}
+        self.sources = {proto: frozenset(filter(None, sources)) for proto, sources in
+                        (("http", http_sources), ("socks4", socks4_sources), ("socks5", socks5_sources)) if sources}
         self.proxies: Dict[str, Set[Proxy]] = {
             proto: set() for proto in self.sources
         }
@@ -343,11 +344,6 @@ async def main() -> None:
     cfg.read("config.ini", encoding="utf-8")
     general = cfg["General"]
     folders = cfg["Folders"]
-    http = cfg["HTTP"]
-    socks4 = cfg["SOCKS4"]
-    socks5 = cfg["SOCKS5"]
-
-
 
     timeout = general.getfloat("Timeout", 10)
     max_connections = general.getint("MaxConnections", 900)
@@ -357,6 +353,7 @@ async def main() -> None:
     proxies_anonymous = folders.getboolean("proxies_anonymous", True)
     proxies_geolocation = folders.getboolean("proxies_geolocation", True)
     proxies_geolocation_anonymous = folders.getboolean("proxies_geolocation_anonymous", True)
+
     http_sources = get_list_from_file('sources/http.txt')
     socks4_sources = get_list_from_file('sources/socks4.txt')
     socks5_sources = get_list_from_file('sources/socks5.txt')
