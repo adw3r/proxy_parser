@@ -20,7 +20,7 @@ def check_proxy(proxy) -> str | None:
         return None
 
 
-def check_proxy_list(proxy_list: set) -> str:  # todo as a generator
+def check_proxy_list(proxy_list: set) -> str:
     with ThreadPoolExecutor(MAX_CONNECTIONS) as worker:
         for proxy in worker.map(check_proxy, proxy_list):
             yield proxy
