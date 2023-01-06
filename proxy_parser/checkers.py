@@ -13,11 +13,9 @@ def check_proxy(proxy) -> str | None:
     '''
     try:
         requests.get('http://api.ipify.org', proxies={'http': proxy, 'https': proxy}, timeout=TIMEOUT)
-        print(proxy)
         return proxy
     except Exception as error:
         print(error)
-        return None
 
 
 def check_proxy_list(proxy_list: set) -> str:

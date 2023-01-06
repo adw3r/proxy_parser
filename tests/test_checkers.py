@@ -51,6 +51,9 @@ class TestChecker(TestCase):
         proxy_checked = check_proxy(TEST_PROXY)
         self.assertIsNotNone(proxy_checked)
 
-    def test_proxy_list(self):
+    def test_proxy_list_checker(self):
         for proxy in check_proxy_list(set(TEST_PROXY_LIST)):
-            print(proxy)
+            self.assertIn('http', proxy)
+
+    def test_integration_test_check_proxy_list_from_source(self):
+        ...
