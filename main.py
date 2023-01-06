@@ -1,10 +1,7 @@
-from __future__ import annotations
-
 import asyncio
 import os
 import pathlib
 import re
-import sys
 from configparser import ConfigParser
 from pathlib import Path
 from random import shuffle
@@ -359,12 +356,12 @@ class ProxyScraperChecker:
         )
 
 
-def get_proxies(path: Path) -> list:
+def get_proxies(path: Path | str) -> list:
     with open(path) as file:
         return file.read().split('\n')
 
 
-def save_proxies(path: Path, proxies: list):
+def save_proxies(path: Path | str, proxies: list):
     with open(path, 'w') as file:
         file.write('\n'.join(proxies))
 
