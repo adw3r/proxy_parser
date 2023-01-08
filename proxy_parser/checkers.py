@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from typing import Iterator
+from typing import Iterator, Generator
 
 import requests
 
@@ -15,10 +15,11 @@ def check_proxy(proxy) -> str | None:
         requests.get('http://api.ipify.org', proxies={'http': proxy, 'https': proxy}, timeout=TIMEOUT)
         return proxy
     except Exception as error:
-        print(error)
+        return None
 
 
-def check_proxy_list(proxy_list: set) -> str:
+def check_proxy_list(proxy_list: set) -> Generator:
     with ThreadPoolExecutor(MAX_CONNECTIONS) as worker:
         for proxy in worker.map(check_proxy, proxy_list):
-            yield proxy
+            if proxy:
+                yield proxy
