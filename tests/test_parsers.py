@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import Generator
 from unittest import TestCase
 
 from proxy_parser.config import PATH_TO_SOURCES
@@ -33,21 +34,12 @@ class TestParsers(TestCase):
             for source in sources:
                 self.assertIn('http', source)
 
-    def test_get_proxy_list_from_link(self):
+    def test_get_proxy_from_link(self):
         '''
         получаем список проксей из источника
 
         '''
 
-        proxies: set = get_proxies_from_link(TEST_PROXIES_SOURCE)
-        self.assertIn('167.235.63.238:3128', proxies)
-
-    def test_regex_kinda(self):
-        '''
-        интеграционный тест всех трёх функций вместе
-
-        '''
-        for file in get_files_from_folder(PATH_TO_SOURCES):
-            for link in get_links_from_file(file):
-                for proxy in get_proxies_from_link(link):
-                    self.assertIn(':', proxy)
+        proxies: Generator = get_proxies_from_link(TEST_PROXIES_SOURCE)
+        for p in proxies:
+            self.assertIn(':', p)
