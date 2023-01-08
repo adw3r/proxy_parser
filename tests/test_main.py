@@ -3,7 +3,7 @@ from typing import Generator
 from unittest import TestCase
 
 from proxy_parser.config import SAVE_PATH
-from proxy_parser.main import main
+from main import main
 from proxy_parser.parsers import get_proxies_from_links, get_uncheked_proxies, get_all_links_with_protos, \
     append_proxy_to_file
 
