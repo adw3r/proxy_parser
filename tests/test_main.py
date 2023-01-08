@@ -15,10 +15,11 @@ class TestMain(TestCase):
         for proto, links in all_links_with_proto.items():
             proxy_pools: Generator = get_proxies_from_links(links)
             for proxy_pool in proxy_pools:
-                self.assertIn(':', proxy_pool)
+                for proxy in proxy_pool:
+                    self.assertIn(':', proxy)
 
     def test_get_all_proxies_with_protos(self):
-        all_unchecked_proxies = get_proxies_with_proto()
+        all_unchecked_proxies: dict[str, tuple] = get_proxies_with_proto()
         for proto, proxy_pool in all_unchecked_proxies.items():
             for proxy in proxy_pool:
                 self.assertIn(proto, proxy)
