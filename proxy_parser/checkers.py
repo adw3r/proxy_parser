@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from typing import Iterator, Generator
+from typing import Generator
 
 import requests
 
