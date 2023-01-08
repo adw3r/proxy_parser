@@ -43,7 +43,7 @@ class TestMain(TestCase):
         append_proxy_to_file(path_to_file, proxy)
         self.assertTrue(path_to_file.exists())
 
-    def test_parsed_file_creates_after_main(self):
+    def test_main(self):
         main()
         path = Path(SAVE_PATH, 'parsed.txt')
         self.assertTrue(path.exists())
