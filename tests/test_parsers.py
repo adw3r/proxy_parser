@@ -1,11 +1,10 @@
 from pathlib import Path
 from unittest import TestCase
 
+from proxy_parser.config import PATH_TO_SOURCES
 from proxy_parser.parsers import get_files_from_folder, get_proxies_from_link, get_links_from_file
 
 TEST_PROXIES_SOURCE = 'https://github.com/keyaanminhas/ka4mas_inventory/raw/1fce10b92fb9f8b38d5f11315bdcb8f15788fb7d/GMAIL/config/proxies.txt'
-
-TEST_SOURCES_FOLDER_PATH = r'C:\Users\Administrator\Desktop\proxy-scraper-checker\test_sources'
 
 
 class TestParsers(TestCase):
@@ -16,10 +15,10 @@ class TestParsers(TestCase):
 
         '''
 
-        list_of_files: tuple = get_files_from_folder(TEST_SOURCES_FOLDER_PATH)
-        self.assertIn(Path(TEST_SOURCES_FOLDER_PATH, 'http.txt'), list_of_files)
-        self.assertIn(Path(TEST_SOURCES_FOLDER_PATH, 'socks4.txt'), list_of_files)
-        self.assertIn(Path(TEST_SOURCES_FOLDER_PATH, 'socks5.txt'), list_of_files)
+        list_of_files: tuple = get_files_from_folder(PATH_TO_SOURCES)
+        self.assertIn(Path(PATH_TO_SOURCES, 'http.txt'), list_of_files)
+        self.assertIn(Path(PATH_TO_SOURCES, 'socks4.txt'), list_of_files)
+        self.assertIn(Path(PATH_TO_SOURCES, 'socks5.txt'), list_of_files)
 
     def test_get_sources_list_from_text_file(self):
         '''
@@ -27,10 +26,10 @@ class TestParsers(TestCase):
 
         '''
 
-        list_of_files: tuple = get_files_from_folder(TEST_SOURCES_FOLDER_PATH)
+        list_of_files: tuple = get_files_from_folder(PATH_TO_SOURCES)
 
         for file in list_of_files:
-            sources: set = get_links_from_file(Path(TEST_SOURCES_FOLDER_PATH, file))
+            sources: set = get_links_from_file(Path(PATH_TO_SOURCES, file))
             for source in sources:
                 self.assertIn('http', source)
 
@@ -48,7 +47,7 @@ class TestParsers(TestCase):
         интеграционный тест всех трёх функций вместе
 
         '''
-        for file in get_files_from_folder(TEST_SOURCES_FOLDER_PATH):
+        for file in get_files_from_folder(PATH_TO_SOURCES):
             for link in get_links_from_file(file):
                 for proxy in get_proxies_from_link(link):
                     self.assertIn(':', proxy)

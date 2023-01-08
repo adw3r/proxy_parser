@@ -3,11 +3,16 @@ from configparser import ConfigParser
 from pathlib import Path
 
 ROOT_FOLDER = Path(__file__).parent.parent
-PATH_TO_SOURCES = Path(ROOT_FOLDER, 'sources')
-MAX_CONNECTIONS = 5000
-TIMEOUT = 10
+cfg: ConfigParser = ConfigParser(interpolation=None)
+cfg.read(Path(ROOT_FOLDER, "config.ini"), encoding="utf-8")
+general = cfg["General"]
 
-REGEX_PATTERN = re.compile(
+PATH_TO_SOURCES: Path = Path(ROOT_FOLDER, 'sources')
+SAVE_PATH: Path = Path(general.get("SavePath", ""))
+MAX_CONNECTIONS: int = int(general.get("MaxConnections", '100'))
+TIMEOUT: int = int(general.get('Timeout', '10'))
+
+REGEX_PATTERN: re.Pattern = re.compile(
     r"(?:^|\D)?(("
     + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255
     + r"\."
@@ -23,15 +28,3 @@ REGEX_PATTERN = re.compile(
     )  # 0-65535
     + r")(?:\D|$)"
 )
-
-# cfg = ConfigParser(interpolation=None)
-# cfg.read("config.ini", encoding="utf-8")
-# general = cfg["General"]
-# folders = cfg["Folders"]
-#
-# SORT_BY_SPEED = general.getboolean("SortBySpeed", True)
-# SAVE_PATH = general.get("SavePath", "")
-# FOLDER_GETBOOLEAN = folders.getboolean("proxies", True)
-# PROXIES_ANONYMOUS = folders.getboolean("proxies_anonymous", True)
-# PROXIES_GEOLOCATION = folders.getboolean("proxies_geolocation", True)
-# PROXIES_GEOLOCATION_ANONYMOUS = folders.getboolean("proxies_geolocation_anonymous", True)
