@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from time import sleep
 
 from proxy_parser.checkers import check_proxy_list
 from proxy_parser.config import SAVE_PATH
@@ -24,6 +25,7 @@ def main():
 def infinite_main():
     while True:
         main()
+        sleep(120)
 
 
 if __name__ == '__main__':
