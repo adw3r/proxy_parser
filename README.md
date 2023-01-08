@@ -15,3 +15,7 @@ and run!
 python main.py
 
 all parsed and checked proxies will save in proxies/parsed.txt. You can change folder if you want in config.ini
+
+
+WARNING!!! The parser runs in infinite mode, which means that it will collect and check proxies every 2 minutes.
+
