@@ -5,7 +5,7 @@ from proxy_parser.checkers import check_proxy, check_proxy_list
 from proxy_parser.parsers import get_proxies_from_link
 
 TEST_PROXIES_SOURCE = 'https://github.com/jetkai/proxy-list/raw/106ec51ef12130fdcde68c855fad37ecdaa2fd28/online-proxies/txt/proxies-http.txt'
-TEST_PROXY = 'http://46.227.247.87:8080'
+TEST_PROXY = ''
 
 
 class TestChecker(TestCase):
@@ -20,6 +20,3 @@ class TestChecker(TestCase):
         proxy_list: Generator = check_proxy_list(proxies)
         for proxy in proxy_list:
             self.assertIsNotNone(proxy)
-
-    def test_integration_test_check_proxy_list_from_source(self):
-        ...
