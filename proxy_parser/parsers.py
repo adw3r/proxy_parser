@@ -35,7 +35,7 @@ def get_proxies_from_links(links: tuple[str]) -> Generator:
             yield res
 
 
-def get_proxies_with_proto() -> dict[str, tuple]:
+def get_uncheked_proxies_with_proto() -> dict[str, tuple]:
     proxies = {}
 
     all_links_with_proto: dict[str, tuple] = get_all_links_with_protos()
@@ -51,4 +51,5 @@ def get_all_links_with_protos() -> dict[str, tuple]:
     for file in get_files_from_folder(PATH_TO_SOURCES):
         file_name = file.name.removesuffix('.txt')
         files[file_name] = tuple(link for link in get_links_from_file(file))
+
     return files

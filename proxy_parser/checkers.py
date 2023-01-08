@@ -14,7 +14,7 @@ def check_proxy(proxy) -> str | None:
         return None
 
 
-def check_proxy_list(proxy_list: set) -> Generator:
+def check_proxy_list(proxy_list: tuple) -> Generator:
     with ThreadPoolExecutor(MAX_CONNECTIONS) as worker:
         for proxy in worker.map(check_proxy, proxy_list):
             if proxy:
