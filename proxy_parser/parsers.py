@@ -32,6 +32,7 @@ def get_links_from_file(path_to_file: Path | str) -> tuple[str]:
 
 
 def get_proxies_from_link(source_link: str) -> tuple | None:
+    print(source_link)
     try:
         response = requests.get(source_link)
         text = response.text

@@ -24,9 +24,12 @@ def main():
 
 def infinite_main():
     while True:
+        print('started parsing!')
         main()
+        print('parsing ends!')
+
         sleep(120)
 
 
 if __name__ == '__main__':
-    main()
+    infinite_main()
