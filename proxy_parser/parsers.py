@@ -50,14 +50,16 @@ def get_proxies_from_links(links: tuple[str]) -> Generator:
             yield res
 
 
-def get_uncheked_proxies_with_proto() -> dict[str, tuple]:
-    proxies = {}
+def get_uncheked_proxies() -> tuple[str]:
+    proxies = set()
 
     all_links_with_proto: dict[str, tuple] = get_all_links_with_protos()
     for proto, links in all_links_with_proto.items():
-        proxies[proto] = tuple(set(f'{proto}://{proxy}' for pool in get_proxies_from_links(links) for proxy in pool))
+        for pool in get_proxies_from_links(links):
+            for proxy in pool:
+                proxies.add(f'{proto}://{proxy}')
 
-    return proxies
+    return tuple(proxies)
 
 
 def get_all_links_with_protos() -> dict[str, tuple]:

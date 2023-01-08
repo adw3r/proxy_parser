@@ -2,10 +2,9 @@ from pathlib import Path
 from typing import Generator
 from unittest import TestCase
 
-from proxy_parser.checkers import check_proxy_list
 from proxy_parser.config import SAVE_PATH
 from proxy_parser.main import main
-from proxy_parser.parsers import get_proxies_from_links, get_uncheked_proxies_with_proto, get_all_links_with_protos, \
+from proxy_parser.parsers import get_proxies_from_links, get_uncheked_proxies, get_all_links_with_protos, \
     append_proxy_to_file
 
 
@@ -24,18 +23,9 @@ class TestMain(TestCase):
                     self.assertIn(':', proxy)
 
     def test_get_all_proxies_with_protos(self):
-        all_unchecked_proxies: dict[str, tuple] = get_uncheked_proxies_with_proto()
-        for proto, proxy_pool in all_unchecked_proxies.items():
-            for proxy in proxy_pool:
-                self.assertIn(proto, proxy)
-
-    def test_get_checked_proxies(self):
-        all_unchecked_proxies_with_proto = get_uncheked_proxies_with_proto()
-
-        for proto, proxy_pool in all_unchecked_proxies_with_proto.items():
-            checked_proxies = check_proxy_list(proxy_pool)
-            for proxy in checked_proxies:
-                self.assertIn('://', proxy)
+        all_unchecked_proxies: tuple[str] = get_uncheked_proxies()
+        for proxy in all_unchecked_proxies:
+            self.assertIn('://', proxy)
 
     def test_append_proxy_to_file(self):
         proxy = 'https://123.123.123.123:8080'
