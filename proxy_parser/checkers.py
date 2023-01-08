@@ -7,10 +7,6 @@ from proxy_parser.config import TIMEOUT, MAX_CONNECTIONS
 
 
 def check_proxy(proxy) -> str | None:
-    '''
-    return proxy string if it works, either return None
-
-    '''
     try:
         requests.get('http://api.ipify.org', proxies={'http': proxy, 'https': proxy}, timeout=TIMEOUT)
         return proxy
