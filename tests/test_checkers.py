@@ -15,7 +15,7 @@ class TestChecker(TestCase):
         self.assertIsNotNone(proxy_checked)
 
     def test_proxy_list_checker(self):
-        proxies: set = set(f'http://{p}' for p in get_proxies_from_link(TEST_PROXIES_SOURCE))
+        proxies: tuple = tuple(set(f'http://{p}' for p in get_proxies_from_link(TEST_PROXIES_SOURCE)))
         proxy_list: Generator[str] = check_proxy_list(proxies)
         for proxy in proxy_list:
             self.assertIsNotNone(proxy)
