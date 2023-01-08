@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Generator
 from unittest import TestCase
 
 from proxy_parser.config import PATH_TO_SOURCES
@@ -30,7 +29,7 @@ class TestParsers(TestCase):
         list_of_files: tuple = get_files_from_folder(PATH_TO_SOURCES)
 
         for file in list_of_files:
-            sources: set = get_links_from_file(Path(PATH_TO_SOURCES, file))
+            sources: tuple = get_links_from_file(Path(PATH_TO_SOURCES, file))
             for source in sources:
                 self.assertIn('http', source)
 
@@ -40,6 +39,6 @@ class TestParsers(TestCase):
 
         '''
 
-        proxies: Generator = get_proxies_from_link(TEST_PROXIES_SOURCE)
+        proxies: tuple = get_proxies_from_link(TEST_PROXIES_SOURCE)
         for p in proxies:
             self.assertIn(':', p)

@@ -9,6 +9,8 @@ general = cfg["General"]
 
 PATH_TO_SOURCES: Path = Path(ROOT_FOLDER, 'sources')
 SAVE_PATH: Path = Path(general.get("SavePath", ""))
+if not SAVE_PATH.exists():
+    SAVE_PATH.mkdir()
 MAX_CONNECTIONS: int = int(general.get("MaxConnections", '100'))
 TIMEOUT: int = int(general.get('Timeout', '10'))
 

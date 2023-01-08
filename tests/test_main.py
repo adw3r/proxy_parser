@@ -1,8 +1,12 @@
+from pathlib import Path
 from typing import Generator
 from unittest import TestCase
 
 from proxy_parser.checkers import check_proxy_list
-from proxy_parser.parsers import get_proxies_from_links, get_uncheked_proxies_with_proto, get_all_links_with_protos
+from proxy_parser.config import SAVE_PATH
+from proxy_parser.main import main
+from proxy_parser.parsers import get_proxies_from_links, get_uncheked_proxies_with_proto, get_all_links_with_protos, \
+    append_proxy_to_file
 
 
 class TestMain(TestCase):
@@ -32,3 +36,14 @@ class TestMain(TestCase):
             checked_proxies = check_proxy_list(proxy_pool)
             for proxy in checked_proxies:
                 self.assertIn('://', proxy)
+
+    def test_append_proxy_to_file(self):
+        proxy = 'https://123.123.123.123:8080'
+        path_to_file = Path(SAVE_PATH, 'parsed.txt')
+        append_proxy_to_file(path_to_file, proxy)
+        self.assertTrue(path_to_file.exists())
+
+    def test_parsed_file_creates_after_main(self):
+        main()
+        path = Path(SAVE_PATH, 'parsed.txt')
+        self.assertTrue(path.exists())

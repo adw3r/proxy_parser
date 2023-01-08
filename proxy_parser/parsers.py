@@ -1,12 +1,27 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Generator
+from typing import Generator, NoReturn, Iterable
 
 import requests
 
 from proxy_parser.config import PATH_TO_SOURCES
 from proxy_parser.config import REGEX_PATTERN
+
+
+def append_proxy_to_file(path_to_file: Path | str, proxy: str) -> NoReturn:
+    if path_to_file.exists():
+        os.remove(path_to_file)
+    with open(path_to_file, 'a') as file:
+        file.write(f'{proxy}\n')
+
+
+def remove_duplicates(path_to_file: Path | str) -> NoReturn:
+    with open(path_to_file) as file:
+        iterable = set(file.read().split('\n'))
+        iterable.remove('')
+    with open(path_to_file, 'w') as file:
+        file.write('\n'.join(iterable))
 
 
 def get_files_from_folder(path_to_folder: Path | str) -> tuple[Path]:
