@@ -1,7 +1,7 @@
 https://raw.githubusercontent.com/yuceltoluyag/GoodProxy/bf6530ba08983a2a9776fe91f8fc16131ff658b8/GoodProxy.txt
 https://github.com/jetkai/proxy-list/raw/2b0eaee670cc3a44e227fef288fa6ea4f1427efd/archive/txt/proxies-http.txt
-https://raw.githubusercontent.com/hanwayTech/free-proxy-list/main/https.txt
 https://github.com/rabbicse/scrapy-crawlers/raw/623caa7b45b15efc5ac06edb4badbc1519af46fb/freeindex/freeindex/prx.txt
+https://raw.githubusercontent.com/hanwayTech/free-proxy-list/main/https.txt
 https://raw.githubusercontent.com/Zaeem20/FREE_PROXIES_LIST/master/https.txt
 https://raw.githubusercontent.com/rx443/proxy-list/main/online/https.txt
 https://www.proxy-list.download/api/v1/get?type=https
