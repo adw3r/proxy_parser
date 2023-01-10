@@ -15,10 +15,8 @@ def main():
 
     for proxy in check_proxy_list(all_unchecked_proxies):
         if c == 0 and path_to_file.exists():
-            print(f'{path_to_file} removed')
             os.remove(path_to_file)
             c += 1
-        print(proxy)
         append_proxy_to_file(path_to_file, proxy)
 
     clean_file(path_to_file)

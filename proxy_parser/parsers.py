@@ -17,7 +17,10 @@ def append_proxy_to_file(path_to_file: Path | str, proxy: str) -> NoReturn:
 def clean_file(path_to_file: Path | str) -> NoReturn:
     with open(path_to_file) as file:
         iterable = set(file.read().split('\n'))
-        iterable.remove('')
+        try:
+            iterable.remove('')
+        except:
+            pass
     with open(path_to_file, 'w') as file:
         file.write('\n'.join(iterable))
 
@@ -27,12 +30,12 @@ def get_files_from_folder(path_to_folder: Path | str) -> tuple[Path]:
 
 
 def get_links_from_file(path_to_file: Path | str) -> tuple[str]:
+    clean_file(path_to_file)
     with open(path_to_file) as file:
-        return tuple(set(file.read().splitlines()))
+        return tuple(set(file.read().split('\n')))
 
 
 def get_proxies_from_link(source_link: str) -> tuple | None:
-    print(source_link)
     try:
         response = requests.get(source_link)
         text = response.text
@@ -51,7 +54,6 @@ def get_proxies_from_links(links: tuple[str]) -> Generator:
 
 def get_uncheked_proxies() -> tuple[str]:
     proxies = set()
-
     all_links_with_proto: dict[str, tuple] = get_all_links_with_protos()
     for proto, links in all_links_with_proto.items():
         for pool in get_proxies_from_links(links):

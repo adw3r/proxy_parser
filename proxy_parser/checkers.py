@@ -12,6 +12,7 @@ def check_proxy(proxy) -> str | None:
     proxies = {'http': proxy, 'https': proxy}
     try:
         resp = requests.get(URL, proxies=proxies, timeout=TIMEOUT, allow_redirects=False)
+        print(resp.json()['query'])
         return proxy
     except Exception as error:
         return None

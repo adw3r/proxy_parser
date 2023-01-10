@@ -20,7 +20,7 @@ class TestParsers(TestCase):
         self.assertIn(Path(PATH_TO_SOURCES, 'socks4.txt'), list_of_files)
         self.assertIn(Path(PATH_TO_SOURCES, 'socks5.txt'), list_of_files)
 
-    def test_get_sources_list_from_text_file(self):
+    def test_get_links_from_text_file(self):
         '''
         получаем источники проксей из файлов и проверяем что это ссылки
 
