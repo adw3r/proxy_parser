@@ -9,7 +9,7 @@ from proxy_parser.parsers import get_uncheked_proxies, append_proxy_to_file, cle
 
 def main():
     all_unchecked_proxies = get_uncheked_proxies()
-    print(len(all_unchecked_proxies))
+    print(f'{len(all_unchecked_proxies)} were found!')
     path_to_file = Path(SAVE_PATH, 'parsed.txt')
     c = 0
 
