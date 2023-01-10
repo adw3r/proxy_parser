@@ -3,7 +3,7 @@ from pathlib import Path
 from time import sleep
 
 from proxy_parser.checkers import check_proxy_list
-from proxy_parser.config import SAVE_PATH
+from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT
 from proxy_parser.parsers import get_uncheked_proxies, append_proxy_to_file, clean_file
 
 
@@ -29,7 +29,7 @@ def infinite_main():
         main()
         print('parsing ends!')
 
-        sleep(120)
+        sleep(MAIN_TIMEOUT)
 
 
 if __name__ == '__main__':

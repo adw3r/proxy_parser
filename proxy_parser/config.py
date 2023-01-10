@@ -13,6 +13,8 @@ if not SAVE_PATH.exists():
     SAVE_PATH.mkdir()
 MAX_CONNECTIONS: int = int(general.get("MaxConnections", '100'))
 TIMEOUT: int = int(general.get('Timeout', '10'))
+MAIN_TIMEOUT = int(general.get('MainTimeout', '240'))
+
 
 REGEX_PATTERN: re.Pattern = re.compile(
     r"(?:^|\D)?(("
