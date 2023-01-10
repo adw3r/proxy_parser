@@ -5,10 +5,13 @@ import requests
 
 from proxy_parser.config import TIMEOUT, MAX_CONNECTIONS
 
+URL = 'http://api.ipify.org'
+
 
 def check_proxy(proxy) -> str | None:
+    proxies = {'http': proxy, 'https': proxy}
     try:
-        requests.get('http://api.ipify.org', proxies={'http': proxy, 'https': proxy}, timeout=TIMEOUT)
+        requests.get(URL, proxies=proxies, timeout=TIMEOUT, allow_redirects=False)
         return proxy
     except Exception as error:
         return None
