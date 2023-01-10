@@ -5,7 +5,7 @@ import requests
 
 from proxy_parser.config import TIMEOUT, MAX_CONNECTIONS
 
-URL = 'http://api.ipify.org'
+URL = 'http://ip-api.com/json/?fields=8217'
 
 
 def check_proxy(proxy) -> str | None:
