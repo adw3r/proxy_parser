@@ -125,6 +125,7 @@ https://openproxylist.xyz/http.txt
 https://proxylist.live/nodes/free_1.php?page=1&showall=1
 https://proxyscan.io/download?type=http
 https://proxysearcher.sourceforge.net/Proxy%20List.php?type=http
+https://github.com/monosans/proxy-list/raw/main/proxies/http.txt
 https://proxyspace.pro/http.txt
 https://proxyspace.pro/https.txt
 https://raw.githubusercontent.com/almroot/proxylist/master/list.txt
