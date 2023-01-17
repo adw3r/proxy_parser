@@ -4,7 +4,7 @@ from unittest import TestCase
 from proxy_parser.config import PATH_TO_SOURCES
 from proxy_parser.parsers import get_files_from_folder, get_proxies_from_link, get_links_from_file
 
-TEST_PROXIES_SOURCE = 'https://github.com/keyaanminhas/ka4mas_inventory/raw/1fce10b92fb9f8b38d5f11315bdcb8f15788fb7d/GMAIL/config/proxies.txt'
+TEST_PROXIES_SOURCE = 'https://github.com/Supergamerrr/rqeqqwe/blob/f138393a9a41429a5f5e7fab8dfeaf726a386c40/required/http-proxies.txt'
 
 
 class TestParsers(TestCase):

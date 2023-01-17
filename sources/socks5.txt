@@ -29,3 +29,5 @@ https://raw.githubusercontent.com/HyperBeats/proxy-list/main/socks5.txt
 https://www.proxy-list.download/api/v1/get?type=socks5
 https://proxysearcher.sourceforge.net/Proxy%20List.php?type=socks
 https://raw.githubusercontent.com/zevtyardt/proxy-list/main/socks5.txt
+https://github.com/jetkai/proxy-list/raw/a6037bcc21f77de8ae65cccd2dcba87eaaa62dc5/archive/txt/proxies-socks5.txt
+https://github.com/Customer112233/SOCK5/raw/175339906020c0e82281510f55cffeb5b77fb54e/socks5_proxies.txt

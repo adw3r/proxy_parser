@@ -8,11 +8,22 @@ from proxy_parser.parsers import get_proxies_from_links, get_uncheked_proxies, g
     append_proxy_to_file
 
 
+TEST_PROXY_SOURCE = 'https://github.com/Gripex-lee/CQhouse_data/raw/e28fdb7c9c61fe647e7e3e5c0cf5d9afc0d8fe6e/house_data/proxies.txt'
+
+
 class TestMain(TestCase):
 
     def test_get_all_links_with_protos_from_sources(self):
         all_links_with_proto: dict[str, tuple] = get_all_links_with_protos()
         self.assertIsInstance(all_links_with_proto, dict)
+
+
+    def test_get_proxies_from_links(self):
+        links = (TEST_PROXY_SOURCE,)
+        proxies = get_proxies_from_links(links)
+        for proxy in proxies:
+            print(proxy)
+
 
     def test_collect_proxies_from_links(self):
         all_links_with_proto: dict[str, tuple] = get_all_links_with_protos()

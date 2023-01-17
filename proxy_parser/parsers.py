@@ -58,7 +58,8 @@ def get_uncheked_proxies() -> tuple[str]:
     for proto, links in all_links_with_proto.items():
         for pool in get_proxies_from_links(links):
             for proxy in pool:
-                proxies.add(f'{proto}://{proxy}')
+                proxy = f'{proto}://{proxy}' if 'http' not in proxy or 'https' not in proxy else proxy
+                proxies.add(str(proxy))
 
     return tuple(proxies)
 
