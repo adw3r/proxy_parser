@@ -9,6 +9,8 @@ from proxy_parser.parsers import get_uncheked_proxies, append_string_to_file, cl
 
 def main():
     for link in get_sources_from_github(15):
+        if not link:
+            break
         print(link)
         append_string_to_file(Path(PATH_TO_SOURCES, 'http.txt'), link)
     all_unchecked_proxies = get_uncheked_proxies()
