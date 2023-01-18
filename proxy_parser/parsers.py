@@ -8,6 +8,8 @@ import requests
 from proxy_parser.config import PATH_TO_SOURCES
 from proxy_parser.config import REGEX_PATTERN
 
+protos = ('http://', 'https://', 'socks4://', 'socks5://')
+
 
 def append_proxy_to_file(path_to_file: Path | str, proxy: str) -> NoReturn:
     with open(path_to_file, 'a') as file:
@@ -58,7 +60,7 @@ def get_uncheked_proxies() -> tuple[str]:
     for proto, links in all_links_with_proto.items():
         for pool in get_proxies_from_links(links):
             for proxy in pool:
-                proxy = f'{proto}://{proxy}' if 'http' not in proxy or 'https' not in proxy else proxy
+                proxy = proxy if any(p in proxy for p in protos) in proxy else f'{proto}://{proxy}'
                 proxies.add(str(proxy))
 
     return tuple(proxies)
