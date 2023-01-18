@@ -1,12 +1,11 @@
 # proxy-scraper
-Scrapes proxies for github
+Scrapes proxies from github
 
 
-The parser uses links to github files named proxies.txt and checks them in multithreading
+The scraper uses github search query "filename:proxies.txt", and saves all links to sources/http.txt. After that checks all founded proxies and saves them in folder in config.ini parameter SavePath
 
 
 install requierments with pip
-
 
 pip install -r requirements.txt
 
