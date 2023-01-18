@@ -3,12 +3,14 @@ from pathlib import Path
 from time import sleep
 
 from proxy_parser.checkers import check_proxy_list
-from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT, PATH_TO_SOURCES
-from proxy_parser.parsers import get_uncheked_proxies, append_proxy_to_file, clean_file, get_links_from_file, \
-    get_files_from_folder, get_all_links_with_protos
+from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT
+from proxy_parser.parsers import get_uncheked_proxies, append_string_to_file, clean_file, get_sources_from_github, PATH_TO_SOURCES
 
 
 def main():
+    for link in get_sources_from_github(15):
+        print(link)
+        append_string_to_file(Path(PATH_TO_SOURCES, 'http.txt'), link)
     all_unchecked_proxies = get_uncheked_proxies()
     print(f'{len(all_unchecked_proxies)} were found!')
     path_to_file = Path(SAVE_PATH, 'parsed.txt')
@@ -19,7 +21,7 @@ def main():
             os.remove(path_to_file)
             c += 1
         print(proxy)
-        append_proxy_to_file(path_to_file, proxy)
+        append_string_to_file(path_to_file, proxy)
 
     clean_file(path_to_file)
 

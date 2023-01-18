@@ -13,6 +13,18 @@ from proxy_parser.config import REGEX_PATTERN
 protos = ('http://', 'https://', 'socks4://', 'socks5://')
 
 
+def find_source_in_response(response: requests.Response) -> str | None:
+    soup = BeautifulSoup(response.text, 'lxml')
+    container = soup.find('div', {'id': 'code_search_results'})
+    all_a = container.find_all('a')
+    for a in all_a:
+        values = a.get('data-hydro-click')
+        if values:
+            loads = json.loads(values)
+            url = loads['payload']['result']['url']
+            yield url
+
+
 def get_sources_from_github(depth: int = 10) -> Generator:
     cookies = {
         '_octo': 'GH1.1.2045407306.1670336220',
@@ -53,21 +65,17 @@ def get_sources_from_github(depth: int = 10) -> Generator:
             's': '',
             'type': 'Code',
         }
-
-        response = requests.get('https://github.com/search', params=params, cookies=cookies, headers=headers)
-        soup = BeautifulSoup(response.text, 'lxml')
-        container = soup.find('div', {'id': 'code_search_results'})
-        all_a = container.find_all('a')
-        for a in all_a:
-            values = a.get('data-hydro-click')
-            if values:
-                loads = json.loads(values)
-                yield loads['payload']['result']['url']
+        try:
+            response = requests.get('https://github.com/search', params=params, cookies=cookies, headers=headers)
+            for url in find_source_in_response(response):
+                yield url
+        except Exception as e:
+            yield None
 
 
-def append_proxy_to_file(path_to_file: Path | str, proxy: str) -> NoReturn:
+def append_string_to_file(path_to_file: Path | str, string: str) -> NoReturn:
     with open(path_to_file, 'a') as file:
-        file.write(f'{proxy}\n')
+        file.write(f'{string}\n')
 
 
 def clean_file(path_to_file: Path | str) -> NoReturn:
@@ -129,13 +137,13 @@ def get_uncheked_proxies() -> tuple[str]:
     return tuple(proxies)
 
 
-def get_all_links_with_protos_and_clean_if_link_without_proxies() -> dict[str, tuple]:
+def get_all_links_with_protos_and_clean_if_link_without_proxies() -> dict[str, set]:
     files = {}
     folder = get_files_from_folder(PATH_TO_SOURCES)
 
     for file in folder:
         file_name = file.name.removesuffix('.txt')
-        files[file_name] = tuple(link for link in get_links_from_file(file))
+        files[file_name] = set(link for link in get_links_from_file(file))
 
         with ThreadPoolExecutor(len(files[file_name])) as worker:
             with_proxies = worker.map(check_source, files[file_name])
