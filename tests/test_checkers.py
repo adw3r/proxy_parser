@@ -4,7 +4,7 @@ from unittest import TestCase
 from proxy_parser.checkers import check_proxy, check_proxy_list
 from proxy_parser.parsers import get_proxies_from_link
 
-TEST_PROXIES_SOURCE = 'https://github.com/jetkai/proxy-list/raw/106ec51ef12130fdcde68c855fad37ecdaa2fd28/online-proxies/txt/proxies-http.txt'
+TEST_PROXIES_SOURCE = 'https://spys.me/proxy.txt'
 TEST_PROXY = ''
 
 

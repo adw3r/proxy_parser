@@ -3,8 +3,9 @@ from pathlib import Path
 from time import sleep
 
 from proxy_parser.checkers import check_proxy_list
-from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT
-from proxy_parser.parsers import get_uncheked_proxies, append_proxy_to_file, clean_file
+from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT, PATH_TO_SOURCES
+from proxy_parser.parsers import get_uncheked_proxies, append_proxy_to_file, clean_file, get_links_from_file, \
+    get_files_from_folder, get_all_links_with_protos
 
 
 def main():

@@ -3,7 +3,8 @@ from typing import Generator
 from unittest import TestCase
 
 from proxy_parser.config import PATH_TO_SOURCES
-from proxy_parser.parsers import get_files_from_folder, get_proxies_from_link, get_links_from_file, get_sources_from_github
+from proxy_parser.parsers import get_files_from_folder, get_proxies_from_link, get_links_from_file, \
+    get_sources_from_github
 
 TEST_PROXIES_SOURCE = 'https://github.com/Supergamerrr/rqeqqwe/blob/f138393a9a41429a5f5e7fab8dfeaf726a386c40/required/http-proxies.txt'
 

@@ -2,7 +2,7 @@ import json
 import os
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import Generator, NoReturn
+from typing import Generator, NoReturn, Iterable
 
 import requests
 from bs4 import BeautifulSoup
@@ -73,10 +73,8 @@ def append_proxy_to_file(path_to_file: Path | str, proxy: str) -> NoReturn:
 def clean_file(path_to_file: Path | str) -> NoReturn:
     with open(path_to_file) as file:
         iterable = set(file.read().split('\n'))
-        try:
+        if '' in iterable:
             iterable.remove('')
-        except:
-            pass
     with open(path_to_file, 'w') as file:
         file.write('\n'.join(iterable))
 
@@ -93,7 +91,7 @@ def get_links_from_file(path_to_file: Path | str) -> tuple[str]:
 
 def get_proxies_from_link(source_link: str) -> tuple | None:
     try:
-        response = requests.get(source_link)
+        response = requests.get(source_link, timeout=10)
         text = response.text
         proxies = tuple(set(proxy.group(1) for proxy in set(REGEX_PATTERN.finditer(text))))
         return proxies
@@ -108,23 +106,41 @@ def get_proxies_from_links(links: tuple[str]) -> Generator:
             yield res
 
 
+def save_iterable(file_name, iterable: Iterable):
+    with open(file_name, 'w') as file_name:
+        file_name.write('\n'.join(iterable))
+
+
+def check_source(link):
+    proxies = get_proxies_from_link(link)
+    if proxies:
+        return link
+
+
 def get_uncheked_proxies() -> tuple[str]:
     proxies = set()
-    all_links_with_proto: dict[str, tuple] = get_all_links_with_protos()
+    all_links_with_proto: dict[str, tuple] = get_all_links_with_protos_and_clean_if_link_without_proxies()
     for proto, links in all_links_with_proto.items():
         for pool in get_proxies_from_links(links):
             for proxy in pool:
-                proxy = proxy if any(p in proxy for p in protos) in proxy else f'{proto}://{proxy}'
+                proxy = proxy if any(p in proxy for p in protos) else f'{proto}://{proxy}'
                 proxies.add(str(proxy))
 
     return tuple(proxies)
 
 
-def get_all_links_with_protos() -> dict[str, tuple]:
+def get_all_links_with_protos_and_clean_if_link_without_proxies() -> dict[str, tuple]:
     files = {}
+    folder = get_files_from_folder(PATH_TO_SOURCES)
 
-    for file in get_files_from_folder(PATH_TO_SOURCES):
+    for file in folder:
         file_name = file.name.removesuffix('.txt')
         files[file_name] = tuple(link for link in get_links_from_file(file))
+
+        with ThreadPoolExecutor(len(files[file_name])) as worker:
+            with_proxies = worker.map(check_source, files[file_name])
+
+        sources_with_proxies = [link for link in with_proxies if link]
+        save_iterable(file, sources_with_proxies)
 
     return files
