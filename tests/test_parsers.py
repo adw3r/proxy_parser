@@ -1,8 +1,9 @@
 from pathlib import Path
+from typing import Generator
 from unittest import TestCase
 
 from proxy_parser.config import PATH_TO_SOURCES
-from proxy_parser.parsers import get_files_from_folder, get_proxies_from_link, get_links_from_file
+from proxy_parser.parsers import get_files_from_folder, get_proxies_from_link, get_links_from_file, get_sources_from_github
 
 TEST_PROXIES_SOURCE = 'https://github.com/Supergamerrr/rqeqqwe/blob/f138393a9a41429a5f5e7fab8dfeaf726a386c40/required/http-proxies.txt'
 
@@ -42,3 +43,14 @@ class TestParsers(TestCase):
         proxies: tuple = get_proxies_from_link(TEST_PROXIES_SOURCE)
         for p in proxies:
             self.assertIn(':', p)
+
+    def test_get_proxy_sources_from_github(self):
+        '''
+        получаем источники прокси с гитхаб
+
+        '''
+
+        github_parser: Generator = get_sources_from_github(depth=1)  # generator of str
+
+        for link in github_parser:
+            self.assertIn('github', link)
