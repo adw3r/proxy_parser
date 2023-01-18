@@ -1,5 +1,5 @@
 # proxy-scraper
-Scrapes proxies from github
+Easy proxies from GitHub!
 
 
 The scraper uses github search query "filename:proxies.txt", and saves all links to sources/http.txt. After that checks all founded proxies and saves them in folder in config.ini parameter SavePath
