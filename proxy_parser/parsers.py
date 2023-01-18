@@ -137,13 +137,13 @@ def get_uncheked_proxies() -> tuple[str]:
     return tuple(proxies)
 
 
-def get_all_links_with_protos_and_clean_if_link_without_proxies() -> dict[str, set]:
+def get_all_links_with_protos_and_clean_if_link_without_proxies() -> dict[str, tuple]:
     files = {}
     folder = get_files_from_folder(PATH_TO_SOURCES)
 
     for file in folder:
         file_name = file.name.removesuffix('.txt')
-        files[file_name] = set(link for link in get_links_from_file(file))
+        files[file_name] = tuple(link for link in get_links_from_file(file))
 
         with ThreadPoolExecutor(len(files[file_name])) as worker:
             with_proxies = worker.map(check_source, files[file_name])

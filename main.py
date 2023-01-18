@@ -12,7 +12,7 @@ def main():
         print(link)
         append_string_to_file(Path(PATH_TO_SOURCES, 'http.txt'), link)
     all_unchecked_proxies = get_uncheked_proxies()
-    print(f'{len(all_unchecked_proxies)} were found!')
+    print(f'{len(all_unchecked_proxies)} proxies were found!')
     path_to_file = Path(SAVE_PATH, 'parsed.txt')
     c = 0
 
