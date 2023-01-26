@@ -1,63 +1,25 @@
 import asyncio
-import os
 from pathlib import Path
-from time import sleep
 
-import aiohttp
-
-import proxy_parser.config
-from proxy_parser.checkers import check_proxy_list, URL
-from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT
-from proxy_parser.parsers import get_uncheked_proxies, append_string_to_file, clean_file, get_sources_from_github, \
-    PATH_TO_SOURCES, save_iterable_to_tile
-
-
-async def check_proxy(semaphore, proxy):
-    try:
-        async with semaphore:
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(10)) as session:
-                response = await session.get(URL, proxy=proxy)
-                try:
-                    json_response = await response.json()
-                    ip = json_response['query']
-                    if ip:
-                        print(proxy)
-                        return proxy
-                except Exception as e:
-                    # logging.exception(e)
-                    pass
-    except Exception as e:
-        # logging.exception(e)
-        pass
-
-
-async def check_proxies(proxies):
-    semaphore = asyncio.Semaphore(proxy_parser.config.MAX_CONNECTIONS)
-    tasks = []
-    for proxy in proxies:
-        try:
-            tas = asyncio.create_task(check_proxy(proxy=proxy, semaphore=semaphore))
-            tasks.append(tas)
-        except:
-            pass
-    result = await asyncio.gather(*tasks)
-    return [p for p in result if p]
+from proxy_parser.checkers import check_proxies
+from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT, PATH_TO_SOURCES
+from proxy_parser.parsers import get_uncheked_proxies, get_sources_from_github, \
+    save_iterable_to_file
 
 
 async def main():
-    for link in get_sources_from_github(15):
-        if not link:
-            break
-        print(link)
-        append_string_to_file(Path(PATH_TO_SOURCES, 'http.txt'), link)
-    path_to_file = Path(SAVE_PATH, 'parsed.txt')
+    links_form_github: set = set(link for link in get_sources_from_github(15) if link)
+    path_to_http_sources = Path(PATH_TO_SOURCES, 'http.txt')
+    save_iterable_to_file(path_to_http_sources, set(links_form_github))
+
     unchecked_proxies = get_uncheked_proxies()
     print(f'proxies were found {len(unchecked_proxies)}')
-    checked_proxies = set(await check_proxies(unchecked_proxies))
+
+    path_to_file = Path(SAVE_PATH, 'parsed.txt')
+    checked_proxies: set = await check_proxies(unchecked_proxies)
     print('double checking proxies')
-    checked_proxies = await check_proxies(checked_proxies)
-    save_iterable_to_tile(path_to_file, checked_proxies)
-    clean_file(path_to_file)
+    checked_proxies: set = await check_proxies(checked_proxies)
+    save_iterable_to_file(path_to_file, checked_proxies)
 
 
 async def infinite_main():
