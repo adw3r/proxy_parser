@@ -8,8 +8,6 @@ https://github.com/Hex1629/proxy/blob/b08e553b7a152a1cbb2b12b7131583d60093255a/H
 https://github.com/S2YM00N/PhecdaCrash/blob/8268d43160b9eaaac052534ad81161755ac3feed/PhecdaCrash/https_proxies.txt
 https://github.com/bossniko200/NettyBotter/blob/3188ab226a5274e0931afe69c22bb2c51e4cdba4/lists/https_proxies.txt
 https://github.com/16Th3/bot-js-attack-vn/blob/2317f397c77c4e3ae6b0c6b122eff1b2f0ff9f01/https_proxies.txt
-https://github.com/neu-ma-tic/test2895/blob/e514a21b1fbb56eac0dd0388f77ece41a2ab9971/c052d5d2-9466-11ed-adc6-eff1958ce59f/File/https-proxies.txt
-https://github.com/iGetUploaded/Reluctant-Selfbot-/blob/a7c43e6001da7d504494a61734fc7e027c614180/Scraped%20Proxies/https-proxies.txt
 https://github.com/Cpartak/proxy-list/blob/8affbe97c7882148de56d4173f4508d709545f55/online-proxies/txt/proxies-https.txt
 https://github.com/havesomtea/EXTERNAL-NATION-SELF-BOT/blob/635883ffafbcdddee0772aed8c3f9c9bd2578259/Data/https-proxies.txt
 https://github.com/Aryan5567/flex-bot/blob/e55660ac8498b98d3e54dbaf01c7cfdc9eb2ced6/https_proxies.txt
@@ -22,10 +20,6 @@ https://github.com/vextia1/Selfbot-Leak/blob/9e0a2010b06bd7cb589ef0c5aad7089fdf7
 https://github.com/laqu123/ema-selfbot/blob/1f19112fb17bb6007d5cdf360d7290ed5af86df8/Data/https-proxies.txt
 https://github.com/Cpartak/proxy-list/blob/8affbe97c7882148de56d4173f4508d709545f55/online-proxies/txt/proxies-http%2Bhttps.txt
 https://github.com/instax-dutta/bhawandar/blob/05ec1574baf4df8ee0d1c93ab82de407dee2f3c7/https_proxies.txt
-https://github.com/CoolCoder1337/dpb/blob/487293390d8680356a61f991bd14706e97bc2a4c/Data/https-proxies.txt
-https://github.com/si-meng-spec/ProxyPool/blob/4b2008e85f586a9644a85e3dddaab7100ac71441/data/https_proxies.txt
-https://github.com/Jess-Lux/DiscordBot-ProxyScrape/blob/d6d6f70b15f12c3243c476fa265abbe46aa72b6e/File/https-proxies.txt
-https://github.com/coder5010/Discord-Proxy-Bot/blob/05d922f35e6cb68ce6e04e0045bbc143dbb966fc/Data/https-proxies.txt
 https://github.com/KurumiFake/Flexbot/blob/60c5e0c2fd40a8b3e13922686f38a89047d0dca0/https_proxies.txt
 https://github.com/Dcp049/socks4/blob/f7e531dff440a32aa875fad69d7da91728f782f8/1k.HTTPS.PROXIES.txt
 https://github.com/proxymasterid/dailyproxy/blob/acecc8d5a9a74bee6e46a9aeef0ec0700b38fa77/1129%20HTTPS%20ANONYMOUS%20PROXIES.txt
@@ -42,7 +36,6 @@ https://github.com/Snaki789/choochoo/blob/1779350063e22fb27f74f365c9ac6b42569b7a
 https://github.com/devent/sscontrol-core/blob/46a09c83645b0782076e4f0d4f1c3189e2778b21/sscontrol-core-haproxy-script-debian/src/test/resources/com/anrisoftware/sscontrol/haproxy/script/debian_11/haproxy_script_proxies_https_cfg_expected.txt
 https://github.com/JAY200625/DDOS/blob/a3a326f3545d27a785fe525f96c8efe2c2cacd09/https_proxies.txt
 https://github.com/Aryan5567/lvnn2/blob/97adcaf67f43cc912a2bf0bb0930f8e477bed151/https_proxies.txt
-https://github.com/ptnguyen128/ao3-rec/blob/dfe6ee498863a094c36d7edfafb8eb6e48475960/scrapeao3/scrapeao3/HTTPS-proxies.txt
 https://github.com/truongthienbt/FlexBOT_NhungToiCheLai/blob/1748036d1bcc8e0cc933c3683faff49662c948b3/https_proxies.txt
 https://github.com/hassanXD0/blueberry/blob/beb05cfad1b1aa16160e5a8795c826797e242c47/Data/https-proxies.txt
 https://github.com/truongthienbt/BOT_CONFIG/blob/3a32889e1089faa9811800f18b9b1faa04909d0a/https_proxies.txt
@@ -50,6 +43,4 @@ https://github.com/truongthienbt/Bot-SpamJoin/blob/6dccb1f526c8b38601a96dad4db14
 https://github.com/Dcp049/socks4/blob/521ce514eaa87511d7ec9f8840c9b622eb7448a6/High%20Speed%20Bandwidth%20Proxies%20HTTPS.TXT
 https://github.com/Hayiaku/Selfbot/blob/5034aaa1e6af04013ce7b56238540ed16837eaea/https-proxies.txt
 https://github.com/sarthakrastogi/L2C4/blob/34c4386ca016460127c11cce8579795490612011/Translation%20Scratch/Translation%20-%20Samskrit/proxies-https.txt
-https://github.com/9xc/MultiBot/blob/1bc85b68edcb34a99bfd5b7f117d70cea8164a57/Data/https-proxies.txt
 https://github.com/Rosee-Z/Discord-Account-Dispenser/blob/bd221a2b6c326b6bec48fa23d558aa983fd64fad/data/proxies/https-proxies.txt
-https://github.com/neu-ma-tic/test2895/blob/e514a21b1fbb56eac0dd0388f77ece41a2ab9971/c054be38-9466-11ed-9bc1-f3e6831b32e2/File/https-proxies.txt

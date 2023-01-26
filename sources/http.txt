@@ -11,7 +11,6 @@ https://github.com/ggbro265235/test2/blob/6a3b1e69ad01f4d74fb5775fb92564fda54045
 https://github.com/memaybeoday/yessir-im-ur-mum/blob/553345f3ea901a043592ef4de922aad2f30c9657/http_proxies.txt
 https://github.com/andzuocdie/hey-bro/blob/f32cdd7350108874eea9820ce7f533f5242ed427/http_proxies.txt
 https://github.com/nck6666/vclmemaybeovaicac/blob/553345f3ea901a043592ef4de922aad2f30c9657/http_proxies.txt
-https://github.com/chllorolucifier/discord-nitro/blob/f36ee6590c20499dc4af334bd8140ac3643240f9/required/http-proxies.txt
 https://github.com/Kenne400k/14/blob/df6e22669372693dc0e83f036c265325c31d1835/http_proxies.txt
 https://github.com/hwangsangg/discordddosbot/blob/f8eeee76b7d832289a5daeb6f8db6a4a90e8a77a/http_proxies.txt
 https://github.com/ggbro265235/test2/blob/73e198e28bd4f3122fafc846a1bb595ab85f9dc5/http_proxies_7%20(1).txt
@@ -23,11 +22,9 @@ https://github.com/Hex1629/proxy/blob/b08e553b7a152a1cbb2b12b7131583d60093255a/H
 https://github.com/manhtool/manhtool/blob/a7df2ce5e50cfb4ffb49d9f8e155a738ad553e48/http_proxies.txt
 https://github.com/andzuocdie/deo-update-nua/blob/8b9438484d4eee6c3a749cbd31daa431bcc33231/http_proxies.txt
 https://github.com/Assaf-Yaari/scrapping_kickstarted/blob/7b6a11ba3a9dc0802e0345060aa975cabad3563f/http_proxies.txt
-https://github.com/neu-ma-tic/test2895/blob/e514a21b1fbb56eac0dd0388f77ece41a2ab9971/c054be38-9466-11ed-9bc1-f3e6831b32e2/File/http-proxies.txt
 https://github.com/ggbro265235/test2/blob/4df807038fa4b03ef0abb374dd6269998a60bce3/http_proxies_10.txt
 https://github.com/thedevboy/ecommerce_scrapper/blob/604921f2156226ad2ae4f85166e065b003e841a9/ProductCreationBatch/amazonscraper/http_proxies.txt
 https://github.com/mustain1983/proxy/blob/0e6aaf060130e3871f693ba0e465f5a397163a18/http_proxies-3.txt
-https://github.com/RaghavPathak/op/blob/38d5a47880f6a69396751d4469cecf5cca3cd17d/required/http-proxies.txt
 https://github.com/selmankaya01/bitirmeprojesi1/blob/66c503ec961d3ec8c9644df739e9a8a0d7f95270/ProxyChecker/ProxyChecker/bin/Debug/http_proxies.txt
 https://github.com/ggbro265235/test2/blob/137d47ba69604a803776f9d8e8b627758bb08a33/http_proxies_5.txt
 https://github.com/Daoxuanthang/Omarv5/blob/127f53598b4ae0f9e3dc90d03c0c6cbf3f1508ae/http_proxies.txt
@@ -38,9 +35,7 @@ https://github.com/Notzn/proxy/blob/fe41ed0dddbd118ccacc1b3003d4056fc0905c22/htt
 https://github.com/SansLineV2/raav/blob/0ccd37c1d09106a2bb89e468973585da3fd91bba/http_proxies.txt
 https://github.com/Leralix/ProjetR/blob/64a4288f0988bebfaa69953fbccb455ead1d0ec1/Scraper/CentraleAutoScraping/CentraleAutoScraping/spiders/HTTP-proxies.txt
 https://github.com/NINOXA/ddos/blob/d37f0a9c4825ee02fdf00fb5a0e9709cd2271d81/http_proxies.txt
-https://github.com/luizbratz/testezin/blob/5a10c61dea5b93fe5be1785761afd409bef1c292/YANG-main/required/http-proxies.txt
 https://github.com/andzuocdie/method-dis-update/blob/ac61f47502c4e81133939295e5766d8477004e03/http_proxies.txt
 https://github.com/andzuocdie/dis-for-ddos/blob/3eab80aa1256704b1c57d25ee3afff9bbfae9bb5/http_proxies.txt
-https://github.com/neu-ma-tic/test2895/blob/e514a21b1fbb56eac0dd0388f77ece41a2ab9971/c052d5d2-9466-11ed-adc6-eff1958ce59f/File/http-proxies.txt
 https://github.com/hminh2027/auto-buff-view-tool/blob/99e4a56ccc30cd902b943995a629ba64cddc2b0a/files/http_proxies.txt
 https://github.com/GSstarGamer/GS-Nuker/blob/aeeddf9176db7c1409233c5b74e6bb9f85ae40db/http_proxies.txt

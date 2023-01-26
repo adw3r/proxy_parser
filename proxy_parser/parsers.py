@@ -76,7 +76,7 @@ def get_sources_from_github(depth: int = 10, query: str = 'filename:proxies.txt'
             'type': 'Code',
         }
         try:
-            response = requests.get('https://github.com/search', params=params, cookies=COOKIES, headers=HEADERS)
+            response = requests.get('https://github.com/search', params=params, cookies=COOKIES, headers=HEADERS, timeout=10)
             for url in find_source_in_response(response):
                 print(url)
                 yield url
