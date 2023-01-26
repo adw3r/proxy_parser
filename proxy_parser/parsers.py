@@ -84,7 +84,7 @@ def get_sources_from_github(depth: int = 10, query: str = 'filename:proxies.txt'
             yield None
 
 
-def clean_file(path_to_file: Path | str) -> NoReturn:
+def clean_file_from_duplicates(path_to_file: Path | str) -> NoReturn:
     with open(path_to_file) as file:
         iterable = set(file.read().split('\n'))
         if '' in iterable:
@@ -98,7 +98,7 @@ def get_files_from_folder(path_to_folder: Path | str) -> tuple[Path]:
 
 
 def get_links_from_file(path_to_file: Path | str) -> tuple[str]:
-    clean_file(path_to_file)
+    clean_file_from_duplicates(path_to_file)
     with open(path_to_file) as file:
         return tuple(set(file.read().split('\n')))
 
