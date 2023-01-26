@@ -43,6 +43,12 @@ HEADERS = {
 }
 
 
+def append_iterable_to_file(path_to_file: Path, iterable: set):
+    with open(path_to_file, 'a') as file:
+        for i in iterable:
+            file.write(f'\n{i}')
+
+
 def save_iterable_to_file(path_to_file: Path, iterable: set):
     with open(path_to_file, 'w') as file:
         file.write('\n'.join(iterable))
@@ -60,12 +66,12 @@ def find_source_in_response(response: requests.Response) -> str | None:
             yield url
 
 
-def get_sources_from_github(depth: int = 10) -> Generator:
+def get_sources_from_github(depth: int = 10, query: str = 'filename:proxies.txt') -> Generator:
     for p in range(depth):
         params = {
             'p': p,
             'o': 'desc',
-            'q': 'filename:proxies.txt',
+            'q': query,
             's': 'indexed',
             'type': 'Code',
         }

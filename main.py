@@ -3,13 +3,24 @@ from pathlib import Path
 
 from proxy_parser.checkers import check_proxies
 from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT, PATH_TO_SOURCES
-from proxy_parser.parsers import get_uncheked_proxies, get_sources_from_github, \
-    save_iterable_to_file
+from proxy_parser.parsers import get_uncheked_proxies, get_sources_from_github, save_iterable_to_file
 
 
 async def main():
-    links_form_github: set = set(link for link in get_sources_from_github(15) if link)
+    query = 'filename:http_proxies.txt'
+    print(f'searching for {query}')
+    links_form_github: set = set(link for link in get_sources_from_github(15, query) if link)
     path_to_http_sources = Path(PATH_TO_SOURCES, 'http.txt')
+    save_iterable_to_file(path_to_http_sources, set(links_form_github))
+    print(f'searching for {query}')
+    query = 'filename:socks4_proxies.txt'
+    links_form_github: set = set(link for link in get_sources_from_github(15, query) if link)
+    path_to_http_sources = Path(PATH_TO_SOURCES, 'socks4.txt')
+    save_iterable_to_file(path_to_http_sources, set(links_form_github))
+    print(f'searching for {query}')
+    query = 'filename:socks5_proxies.txt'
+    links_form_github: set = set(link for link in get_sources_from_github(15, query) if link)
+    path_to_http_sources = Path(PATH_TO_SOURCES, 'socks5.txt')
     save_iterable_to_file(path_to_http_sources, set(links_form_github))
 
     unchecked_proxies = get_uncheked_proxies()

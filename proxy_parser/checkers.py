@@ -7,12 +7,12 @@ from proxy_parser import config
 URL = 'http://ip-api.com/json/?fields=8217'
 
 
-async def check_proxy(semaphore, proxy):
+async def check_proxy(semaphore: asyncio.Semaphore, proxy: str) -> str | None:
     try:
         async with semaphore:
             async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(config.TIMEOUT)) as session:
-                response = await session.get(URL, proxy=proxy)
                 try:
+                    response = await session.get(URL, proxy=proxy)
                     json_response = await response.json()
                     ip = json_response['query']
                     if ip:
@@ -20,10 +20,10 @@ async def check_proxy(semaphore, proxy):
                         return proxy
                 except Exception as e:
                     # logging.exception(e)
-                    pass
+                    return None
     except Exception as e:
         # logging.exception(e)
-        pass
+        return None
 
 
 async def check_proxies(proxies: set) -> set[str]:
