@@ -16,3 +16,5 @@ all parsed and checked proxies will save in proxies/parsed.txt. You can change f
 
 
 WARNING!!! The parser runs in infinite mode, which means that it will collect and check proxies every timelimit which specified in config.ini MainTimeout
+
+replaced main lib requests with aiohttp which increased speed of parsing
