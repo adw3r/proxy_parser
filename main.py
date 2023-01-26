@@ -5,6 +5,7 @@ from time import sleep
 
 import aiohttp
 
+import proxy_parser.config
 from proxy_parser.checkers import check_proxy_list, URL
 from proxy_parser.config import SAVE_PATH, MAIN_TIMEOUT
 from proxy_parser.parsers import get_uncheked_proxies, append_string_to_file, clean_file, get_sources_from_github, \
@@ -31,7 +32,7 @@ async def check_proxy(semaphore, proxy):
 
 
 async def check_proxies(proxies):
-    semaphore = asyncio.Semaphore(5000)
+    semaphore = asyncio.Semaphore(proxy_parser.config.MAX_CONNECTIONS)
     tasks = []
     for proxy in proxies:
         tasks.append(asyncio.create_task(check_proxy(proxy=proxy, semaphore=semaphore)))
