@@ -36,7 +36,6 @@ https://github.com/DarthOCE/sProxy/blob/b9373bdf947f6f1f8ac1b62efe1621724f7a3741
 https://github.com/hassanXD0/blueberry/blob/beb05cfad1b1aa16160e5a8795c826797e242c47/Data/socks4-proxies.txt
 https://github.com/vextia1/Selfbot-Leak/blob/9e0a2010b06bd7cb589ef0c5aad7089fdf70cb60/Alucard/Data/socks4-proxies.txt
 https://github.com/Lowong1337/Archive/blob/4dad4408f23c1e6494f2172727f621c5e0ea3973/Socks4_proxies.txt
-https://github.com/Dcp049/socks4/blob/521ce514eaa87511d7ec9f8840c9b622eb7448a6/High%20Speed%20Bandwidth%20Proxies%20Socks4.TXT
 https://github.com/liltoba/ProxyBot/blob/ef423489a7270c131f936f6663c2c0c584b05715/ProxyBot/bin/Debug/Proxy/socks4_proxies.txt
 https://github.com/memerich/zawawa/blob/090a538f5092fa9b3df5293148fcc0a1d81fff58/socks4_proxies.txt
 https://github.com/xxTurborocketxx/Crystal-Selfbot/blob/bf0574072965147bd3e51f8b1c1d890e96f87e58/Data/socks4-proxies.txt
