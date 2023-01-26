@@ -13,6 +13,11 @@ from proxy_parser.config import REGEX_PATTERN
 protos = ('http://', 'https://', 'socks4://', 'socks5://')
 
 
+def save_iterable_to_tile(path_to_file: Path, iterable: Iterable):
+    with open(path_to_file, 'w') as file:
+        file.write('\n'.join(iterable))
+
+
 def find_source_in_response(response: requests.Response) -> str | None:
     soup = BeautifulSoup(response.text, 'lxml')
     container = soup.find('div', {'id': 'code_search_results'})
