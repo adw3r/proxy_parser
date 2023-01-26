@@ -17,8 +17,10 @@ https://github.com/nicknamekr/proxygen/blob/1b68809513ba26a4e053ebb47055a677e99b
 https://github.com/SirWorldBanYT/Bot-Crash/blob/fd079d6c362b364ef384001c40588354c6d7efc4/socks5_proxies.txt
 https://github.com/antoinevastel/free_proxy_checker/blob/f98ead0a514beb2c9fc150d09d518668ec6c708a/examples/data/socks5_proxies.txt
 https://github.com/Groznek/socks5-proxy/blob/21d8c9592b3c4b8ed2fa2891492f0a687e0ca498/SOCKS5-proxies.txt
+https://github.com/0lp/Execard-Selfbot/blob/f10d8aa0285c53cf0050d139337f0bfab5bdad16/Data/socks5-proxies.txt
 https://github.com/TgxBotz/ProxyGenBot/blob/32bc46b483c6ba53391b2faaaf07c3dc18c359d8/socks5_proxies.txt
 https://github.com/oo0055/proxies/blob/8cb3fb1d2fb6b2c6c3c169d090078c8c0cc75d99/socks5_proxies.txt
+https://github.com/hassanXD0/blueberry/blob/beb05cfad1b1aa16160e5a8795c826797e242c47/Data/socks5-proxies.txt
 https://github.com/laqu123/ema-selfbot/blob/1f19112fb17bb6007d5cdf360d7290ed5af86df8/Data/socks5-proxies.txt
 https://github.com/selmankaya01/bitirmeprojesi1/blob/66c503ec961d3ec8c9644df739e9a8a0d7f95270/ProxyChecker/ProxyChecker/bin/Debug/socks5_proxies.txt
 https://github.com/4vk/8ys-s/blob/0dd98c4e6d43979a83a49d1b0c5976d3a69496c7/Scraped%20Proxies/socks5-proxies.txt
