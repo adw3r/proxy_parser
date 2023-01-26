@@ -15,9 +15,10 @@ async def main():
     }
     for query, file_name in queries.items():
         print(f'searching for {query}')
-        links_form_github: set = set(link for link in get_sources_from_github(12, query) if link)
-        path_to_http_sources = Path(PATH_TO_SOURCES, file_name)
-        save_iterable_to_file(path_to_http_sources, set(links_form_github))
+        links_form_github: set = set(link for link in get_sources_from_github(10, query) if link)
+        if links_form_github:
+            path_to_http_sources = Path(PATH_TO_SOURCES, file_name)
+            save_iterable_to_file(path_to_http_sources, set(links_form_github))
 
     unchecked_proxies = get_uncheked_proxies()
     print(f'proxies were found {len(unchecked_proxies)}')
