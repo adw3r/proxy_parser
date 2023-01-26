@@ -44,7 +44,6 @@ def get_sources_from_github(depth: int = 10) -> Generator:
         'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
         'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
         'cache-control': 'max-age=0',
-        # 'cookie': '_octo=GH1.1.2045407306.1670336220; _device_id=4080764a6f93b98d37a7aba816e05ad3; user_session=ltHnngOmNE_u6xWjJxxmz_KUQY0D7tma7_GdBj2um-77sHE6; __Host-user_session_same_site=ltHnngOmNE_u6xWjJxxmz_KUQY0D7tma7_GdBj2um-77sHE6; logged_in=yes; dotcom_user=alexeyNaidiuk; color_mode=%7B%22color_mode%22%3A%22auto%22%2C%22light_theme%22%3A%7B%22name%22%3A%22light%22%2C%22color_mode%22%3A%22light%22%7D%2C%22dark_theme%22%3A%7B%22name%22%3A%22dark%22%2C%22color_mode%22%3A%22dark%22%7D%7D; preferred_color_mode=dark; tz=Europe%2FKiev; has_recent_activity=1; _gh_sess=2%2BYmb6VxC1D7vei6wJ7UXnOFmUAzd%2FbcMppZ7Gk943uabZXbOKbmhgxm591iDroEkTwM1%2BgmjOtXauIl62vDeo6OweVQbzcen6kEYZ%2BEh16zswnbmHxvEoLx5lPp6xz2ePQurkcSUhPLwzxTn3y3fTWrZ9z3Ve1RA8CDyse1CldoHBJn90P2A1JpOksi5Xk5VHizeP1BtGDdHj9NTlf8OGEiqcBhS69vxeSjJpzFdsSOHeqqzzLOL7aZ80Sixtb0Bz533b3uXg8qAPSUzAJ6yTm%2BOgv0skYQiVAQ2jWng4gEqqG3ZTLm%2FAu9gMcm%2F%2B3de8i768HDErXUd1Ql493gAeQBKgV4KWVF--GxjG4lFbsIyVZtIj--3BKli09Sj75hxuWNrP9iug%3D%3D',
         'referer': 'https://github.com/search?q=language%3Apython',
         'sec-ch-ua': '"Not_A Brand";v="99", "Google Chrome";v="109", "Chromium";v="109"',
         'sec-ch-ua-mobile': '?0',
@@ -62,7 +61,7 @@ def get_sources_from_github(depth: int = 10) -> Generator:
             'p': p,
             'o': 'desc',
             'q': 'filename:proxies.txt',
-            's': '',
+            's': 'indexed',
             'type': 'Code',
         }
         try:
@@ -130,6 +129,8 @@ def get_uncheked_proxies() -> tuple[str]:
     all_links_with_proto: dict[str, tuple] = get_all_links_with_protos_and_clean_if_link_without_proxies()
     for proto, links in all_links_with_proto.items():
         for pool in get_proxies_from_links(links):
+            if not pool:
+                continue
             for proxy in pool:
                 proxy = proxy if any(p in proxy for p in protos) else f'{proto}://{proxy}'
                 proxies.add(str(proxy))
