@@ -18,10 +18,10 @@ queries = {
 async def main():
     for query, file_name in queries.items():
         print(f'searching for {query}')
-        links_form_github: set = set(link for link in get_sources_from_github(7, query) if link)
+        links_form_github: set = set(link for link in get_sources_from_github(5, query) if link)
         if links_form_github:
             path_to_http_sources = Path(PATH_TO_SOURCES, file_name)
-            append_iterable_to_file(path_to_http_sources, set(links_form_github))
+            append_iterable_to_file(path_to_http_sources, links_form_github)
             clean_file_from_duplicates(path_to_http_sources)
 
     unchecked_proxies = get_uncheked_proxies()
