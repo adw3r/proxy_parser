@@ -1,0 +1,7 @@
+https://github.com/jetkai/proxy-list/blob/d7906d093694db6f4fb21e00d4d21a38ec72dfe7/online-proxies/txt/proxies-socks5.txt
+https://github.com/selmankaya01/bitirmeprojesi1/blob/66c503ec961d3ec8c9644df739e9a8a0d7f95270/ProxyChecker/ProxyChecker/bin/Debug/socks5_proxies.txt
+https://github.com/jetkai/proxy-list/blob/d7906d093694db6f4fb21e00d4d21a38ec72dfe7/archive/txt/proxies-socks5.txt
+https://github.com/eliakimatamba/strawpoll_proxy_auto_vote/blob/11b9fbb74b10b9d1d546ecfccb75b9552559ea63/socks5_proxies.txt
+https://github.com/Notzn/proxy/blob/01fd7caadf55fc1d58a908fdabe3fc919fb36267/socks5_proxies.txt
+https://github.com/Hex1629/proxy/blob/b08e553b7a152a1cbb2b12b7131583d60093255a/SOCKS5-proxies.txt
+https://github.com/proxymasterid/dailyproxy/blob/bb4ca5b740a0d21097d81c4f2a5c7be8636b3925/563%20SOCKS5%20ELITE%20PROXIES.txt

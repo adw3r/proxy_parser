@@ -1,5 +1,6 @@
 import asyncio
 import collections
+import logging
 from typing import Generator, AsyncGenerator
 
 import aiohttp
@@ -19,7 +20,6 @@ async def check_proxy(semaphore: asyncio.Semaphore, proxy: str) -> str | None:
                     if ip:
                         return proxy, json_response
                 except Exception as e:
-                    # logging.exception(e)
                     return None
 
 

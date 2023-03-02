@@ -16,7 +16,7 @@ queries = {
 
 
 async def main():
-    await update_sources()
+    await update_sources(2)
 
     path_to_file = Path(SAVE_PATH, 'parsed.txt')
 
@@ -37,10 +37,10 @@ async def main():
         append_to_file(Path(path_to_file), proxy)
 
 
-async def update_sources():
+async def update_sources(depth=7):
     for query, file_name in queries.items():
         print(f'searching for {query}')
-        links_form_github: set = set(link for link in get_sources_from_github(7, query) if link)
+        links_form_github: set = set(link for link in get_sources_from_github(depth, query) if link)
         if links_form_github:
             path_to_http_sources = Path(PATH_TO_SOURCES, file_name)
             append_iterable_to_file(path_to_http_sources, links_form_github)

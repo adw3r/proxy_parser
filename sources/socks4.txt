@@ -1,0 +1,7 @@
+https://github.com/selmankaya01/bitirmeprojesi1/blob/66c503ec961d3ec8c9644df739e9a8a0d7f95270/ProxyChecker/ProxyChecker/bin/Debug/socks4_proxies.txt
+https://github.com/jetkai/proxy-list/blob/d7906d093694db6f4fb21e00d4d21a38ec72dfe7/online-proxies/txt/proxies-socks4.txt
+https://github.com/jetkai/proxy-list/blob/d7906d093694db6f4fb21e00d4d21a38ec72dfe7/archive/txt/proxies-socks4.txt
+https://github.com/dragonv4a/proxy/blob/15f484a34fb008703e6211120452c0eb24ab0536/socks4_proxies.txt
+https://github.com/eliakimatamba/strawpoll_proxy_auto_vote/blob/11b9fbb74b10b9d1d546ecfccb75b9552559ea63/socks4_proxies.txt
+https://github.com/Eblan4ikRK/SOCKS4/blob/ddd2f346267580b2fd9c310bb0b0bb587f2dea5c/SOCKS4-proxies.txt
+https://github.com/Hex1629/proxy/blob/b08e553b7a152a1cbb2b12b7131583d60093255a/SOCKS4-proxies.txt

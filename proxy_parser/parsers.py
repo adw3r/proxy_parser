@@ -60,7 +60,8 @@ def get_lines_from_file(path_to_file) -> set:
 
 def append_iterable_to_file(path_to_file: Path, iterable: set):
     with open(path_to_file, 'a') as file:
-        file.writelines(iterable)
+        for line in iterable:
+            file.write(f'\n{line}')
 
 
 def save_iterable_to_file(path_to_file: Path, iterable: set):

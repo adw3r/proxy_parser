@@ -1,0 +1,8 @@
+https://github.com/truongthienbt/FlexBOT_NhungToiCheLai/blob/1748036d1bcc8e0cc933c3683faff49662c948b3/https_proxies.txt
+https://github.com/proxymasterid/dailyproxy/blob/acecc8d5a9a74bee6e46a9aeef0ec0700b38fa77/1129%20HTTPS%20ANONYMOUS%20PROXIES.txt
+https://github.com/jetkai/proxy-list/blob/d7906d093694db6f4fb21e00d4d21a38ec72dfe7/online-proxies/txt/proxies-https.txt
+https://github.com/w3ll-c0d3/amazon-web-scraper/blob/1a108166204ed1a42a8df65e8878b45b9b22b527/https_proxies.txt
+https://github.com/Hex1629/proxy/blob/b08e553b7a152a1cbb2b12b7131583d60093255a/HTTPS-proxies.txt
+https://github.com/IgresRF/ProxyScraperBot/blob/2499f246a8788a234932fe0e151a48254a3dc545/Data/https-proxies.txt
+https://github.com/jetkai/proxy-list/blob/d7906d093694db6f4fb21e00d4d21a38ec72dfe7/archive/txt/proxies-https.txt
+https://github.com/16Th3/bot-js-attack-vn/blob/2317f397c77c4e3ae6b0c6b122eff1b2f0ff9f01/https_proxies.txt
