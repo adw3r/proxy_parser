@@ -1,7 +1,5 @@
 import asyncio
-import collections
-import logging
-from typing import Generator, AsyncGenerator
+from typing import AsyncGenerator
 
 import aiohttp
 
@@ -11,16 +9,16 @@ URL = 'http://ip-api.com/json/?fields=8217'
 
 
 async def check_proxy(semaphore: asyncio.Semaphore, proxy: str) -> str | None:
-    async with semaphore:
-        async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(config.TIMEOUT)) as session:
-            async with session.get(URL, proxy=proxy) as response:
-                try:
+    try:
+        async with semaphore:
+            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(config.TIMEOUT)) as session:
+                async with session.get(URL, proxy=proxy) as response:
                     json_response = await response.json()
                     ip = json_response['query']
                     if ip:
                         return proxy, json_response
-                except Exception as e:
-                    return None
+    except Exception as e:
+        return None
 
 
 async def check_proxies_generator(proxies: set) -> AsyncGenerator:
