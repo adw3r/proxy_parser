@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   parser:
-    image: alexeynaidiuk/proxy-parser
+    image: alexeynaidiuk/proxy-parser:latest
     build: .
     volumes:
       - .:/app
