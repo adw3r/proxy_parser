@@ -16,7 +16,7 @@ queries = {
 
 
 async def main():
-    await update_sources(2)
+    await update_sources(8)
 
     path_to_file = Path(SAVE_PATH, 'parsed.txt')
 
