@@ -10,7 +10,7 @@ pip install -r requirements.txt
 
 and run!
 
-python main.py
+python proxy_parser
 
 all parsed and checked proxies will save in proxies/parsed.txt. You can change folder if you want in config.ini
 
