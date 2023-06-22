@@ -1,3 +1,4 @@
+import asyncio
 import re
 from configparser import ConfigParser
 from pathlib import Path
@@ -26,7 +27,7 @@ TIMEOUT: int = GENERAL.getint('Timeout', '10')
 INF_MAIN_TIMEOUT_SECONDS: int = GENERAL.getint('MainTimeout', '240')
 DEPTH = GENERAL.getint('ParsingDepth', '7')
 
-
+SEMAPHORE = asyncio.Semaphore(MAX_CONNECTIONS)
 REGEX_PATTERN: re.Pattern = re.compile(
     r"(?:^|\D)?(("
     + r"(?:[1-9]|[1-9]\d|1\d{2}|2[0-4]\d|25[0-5])"  # 1-255

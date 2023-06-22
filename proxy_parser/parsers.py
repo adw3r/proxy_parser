@@ -2,15 +2,15 @@ import asyncio
 import itertools
 import os
 from pathlib import Path
-from typing import NoReturn, Any
+from typing import NoReturn, Any, AsyncGenerator
 
 import aiohttp
 import requests
 from bs4 import BeautifulSoup
 
-from proxy_parser.config import REGEX_PATTERN, SEARCH_QUERIES, PATH_TO_SOURCES, DEPTH, NOT_CHECKED_PROXIES_FILE
-
-protos = ('http://', 'https://', 'socks4://', 'socks5://')
+from proxy_parser import checkers
+from proxy_parser.config import REGEX_PATTERN, SEARCH_QUERIES, PATH_TO_SOURCES, DEPTH, NOT_CHECKED_PROXIES_FILE, \
+    SEMAPHORE, CHECKED_PROXIES_FILE
 
 COOKIES = {
     '_octo': 'GH1.1.2045407306.1670336220',
@@ -25,7 +25,6 @@ COOKIES = {
     'has_recent_activity': '1',
     '_gh_sess': 'q7aH3Q2vx6NV1WTTA0MFUcTzyhObT0evWl5c6LDusWpknBgE5%2B7fUN%2Fot6SUptY9n%2BoPiaXP694p1FIa2FGtOH1Mspzxzjm2bO0xvJDFd3e3jDab2I%2B42HrIBlZ3ZaINaok%2B9pIJuKxfi0U4PEjBuGB4HR764mOpc7glON1NrJ%2FFbXk%2Bn%2FFJWYvRheKTeeotpS7qIGb2sd91zheolHgHgiIJU9R%2FUJlSm20p0dM7TvGx9Vh0NlWRPBMLbfzc6PCV7KnibmO45YF7VAjyzD0OjuVzpMwYcGLvTdMRYY4Xe1SkIOlpJOsHD%2BkyZMFCE3Kc9VmKn%2B%2BXDXRvYAZpmg%3D%3D--Mv%2Bp%2FNXaXIsdeTAY--ZwQfQks6oKqHZvK%2BrkwHsQ%3D%3D',
 }
-
 HEADERS = {
     'authority': 'github.com',
     'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
@@ -49,8 +48,9 @@ async def fetch_source(session, source_link) -> tuple[str | Any, ...] | None:
     text = None
     proxies = tuple()
     try:
-        async with session.get(source_link) as response:
-            text = await response.text()
+        async with SEMAPHORE:
+            async with session.get(source_link) as response:
+                text = await response.text()
     except Exception as e:
         print(e)
     if text:
@@ -59,9 +59,7 @@ async def fetch_source(session, source_link) -> tuple[str | Any, ...] | None:
 
 
 async def get_proxies(sources_urls: tuple[str]) -> tuple[str]:
-    seconds = 60
-    timeout = aiohttp.ClientTimeout(total=seconds)
-    async with aiohttp.ClientSession(timeout=timeout) as session:
+    async with aiohttp.ClientSession() as session:
         cors = [fetch_source(session, url) for url in sources_urls]
         proxies: tuple[str] = await asyncio.gather(*cors)
         return proxies
@@ -140,6 +138,7 @@ async def update_sources():
             links_from_github: list[str] | None = get_sources_from_github(page, query)
             if links_from_github:
                 links.extend(links_from_github)
+        print(*links, sep='\n')
         append_iterable_to_file(path_to_source, set(links))
         clean_file_from_duplicates(path_to_source)
 
@@ -152,10 +151,19 @@ async def parse_unchecked_proxies():
         proxies: tuple[str] = await get_proxies(urls)
         if proxies:
             proxies: set[str] = set(itertools.chain.from_iterable([p for p in proxies if p]))
+            print(proxies)
             unchecked_proxies_set.update(set(f'{protocol}://{proxy}' for proxy in proxies))
     with open(NOT_CHECKED_PROXIES_FILE, 'w') as file:
         file.write('\n'.join(unchecked_proxies_set))
     print('finished to collect proxies')
+
+
+async def check_proxies():
+    unchecked_proxies_set = await get_uncheked_proxies()
+    checked_proxies_generator: AsyncGenerator = checkers.check_proxies_generator(unchecked_proxies_set)
+    clear_file(CHECKED_PROXIES_FILE)
+    async for proxy, json_resp in checked_proxies_generator:
+        append_to_file(CHECKED_PROXIES_FILE, proxy)
 
 
 async def get_uncheked_proxies() -> set[str]:

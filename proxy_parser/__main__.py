@@ -1,24 +1,13 @@
 import asyncio
 import datetime
-from typing import AsyncGenerator
 
-from proxy_parser import config, parsers, checkers
-from proxy_parser.parsers import get_uncheked_proxies
-
-
-async def check_proxies():
-    unchecked_proxies_set = await get_uncheked_proxies()
-    checked_proxies_generator: AsyncGenerator = checkers.check_proxies_generator(unchecked_proxies_set)
-    parsers.clear_file(config.CHECKED_PROXIES_FILE)
-    async for proxy, json_resp in checked_proxies_generator:
-        print(proxy, json_resp)
-        parsers.append_to_file(config.CHECKED_PROXIES_FILE, proxy)
+from proxy_parser import config, parsers
 
 
 async def main():
-    # await update_sources()
+    await parsers.update_sources()
     await parsers.parse_unchecked_proxies()
-    await check_proxies()
+    await parsers.check_proxies()
 
 
 async def infinite_main():
