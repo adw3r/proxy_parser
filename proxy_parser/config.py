@@ -3,17 +3,28 @@ from configparser import ConfigParser
 from pathlib import Path
 
 ROOT_FOLDER = Path(__file__).parent.parent
-cfg: ConfigParser = ConfigParser(interpolation=None)
-cfg.read(Path(ROOT_FOLDER, "config.ini"), encoding="utf-8")
-general = cfg["General"]
+config: ConfigParser = ConfigParser(interpolation=None)
+config.read(Path(ROOT_FOLDER, "config.ini"), encoding="utf-8")
+
+GENERAL = config["General"]
 
 PATH_TO_SOURCES: Path = Path(ROOT_FOLDER, 'sources')
-SAVE_PATH: Path = Path(general.get("SavePath", ""))
-if not SAVE_PATH.exists():
-    SAVE_PATH.mkdir()
-MAX_CONNECTIONS: int = int(general.get("MaxConnections", '100'))
-TIMEOUT: int = int(general.get('Timeout', '10'))
-MAIN_TIMEOUT = int(general.get('MainTimeout', '240'))
+if not PATH_TO_SOURCES.exists():
+    PATH_TO_SOURCES.mkdir()
+
+PROXIES_PATH: Path = Path(GENERAL.get("SavePath", ""))
+if not PROXIES_PATH.exists():
+    PROXIES_PATH.mkdir()
+
+
+NOT_CHECKED_PROXIES_FILE = Path(PROXIES_PATH, 'unchecked_proxies.txt')
+CHECKED_PROXIES_FILE = Path(PROXIES_PATH, 'parsed.txt')
+
+
+MAX_CONNECTIONS: int = GENERAL.getint("MaxConnections", '1000')
+TIMEOUT: int = GENERAL.getint('Timeout', '10')
+INF_MAIN_TIMEOUT_SECONDS: int = GENERAL.getint('MainTimeout', '240')
+DEPTH = GENERAL.getint('ParsingDepth', '7')
 
 
 REGEX_PATTERN: re.Pattern = re.compile(
@@ -32,3 +43,12 @@ REGEX_PATTERN: re.Pattern = re.compile(
     )  # 0-65535
     + r")(?:\D|$)"
 )
+
+
+SEARCH_QUERIES = {
+    'path:http_proxies.txt': 'http.txt',
+    'path:proxies.txt': 'http.txt',
+    'path:https_proxies.txt': 'https.txt',
+    'path:socks5_proxies.txt': 'socks5.txt',
+    'path:socks4_proxies.txt': 'socks4.txt',
+}

@@ -6,3 +6,5 @@ services:
     build: .
     volumes:
       - .:/app
+      - ./proxies:./proxies
+      - ./sources:./sources

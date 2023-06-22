@@ -7,31 +7,30 @@ from proxy_parser import config
 
 URL = 'http://ip-api.com/json/?fields=8217'
 
+semaphore = asyncio.BoundedSemaphore(config.MAX_CONNECTIONS)
 
-async def check_proxy(semaphore: asyncio.Semaphore, proxy: str) -> str | None:
+
+async def check_proxy(session, semaphore, proxy: str) -> tuple[str, dict] | None:
     try:
         async with semaphore:
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(config.TIMEOUT)) as session:
-                async with session.get(URL, proxy=proxy) as response:
-                    json_response = await response.json()
-                    ip = json_response['query']
-                    if ip:
-                        return proxy, json_response
+            async with session.get(URL, proxy=proxy, timeout=aiohttp.ClientTimeout(10)) as response:
+                json_response = await response.json()
+                ip = json_response['query']
+                if ip:
+                    proxy_json_response = proxy, json_response
+                    return proxy_json_response
     except Exception as e:
         return None
 
 
-async def check_proxies_generator(proxies: set) -> AsyncGenerator:
-    semaphore = asyncio.Semaphore(config.MAX_CONNECTIONS)
-    tasks = []
-    for proxy in proxies:
-        tas = asyncio.create_task(check_proxy(proxy=proxy, semaphore=semaphore))
-        tasks.append(tas)
-    for p in asyncio.as_completed(tasks):
-        await_p = None
-        try:
-            await_p = await p
-        except:
-            pass
-        if await_p:
-            yield await_p
+async def check_proxies_generator(proxies: set[str]) -> AsyncGenerator:
+    async with aiohttp.ClientSession() as session:
+        cors = [check_proxy(session, semaphore, proxy) for proxy in proxies]
+        for result in asyncio.as_completed(cors):
+            try:
+                await_p = await result
+                if await_p:
+                    yield await_p
+            except Exception as err:
+                print(err)
+                yield None
