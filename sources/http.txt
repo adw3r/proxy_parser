@@ -235,12 +235,12 @@ https://github.com/S2YM00N/PhecdaCrash/blob/8268d43160b9eaaac052534ad81161755ac3
 https://github.com/jetkai/proxy-list/blob/e53de7f73b80183bccc56442a79ce6a790ab02a6/archive/txt/proxies-http.txt
 https://github.com/jetkai/proxy-list/blob/4b4082322419bee1fb16ad2b9deb2d841342bb2f/online-proxies/txt/proxies-http.txt
 https://github.com/sadiknabil/spotify_bots_streaming/blob/f9fbac21839da9bedd8b467e7a250c91fc8ed757/streaming_http_proxies.txt#L4
+https://github.com/jetkai/proxy-list/blob/aba06efe65a3e0d15ae4350bae9391974fff7d64/archive/txt/proxies-http.txt
 https://github.com/jetkai/proxy-list/blob/faceb07e692197a1ba821339c111e2ac3a7a86eb/archive/txt/proxies-http.txt
 https://github.com/jetkai/proxy-list/blob/19d00a1ef35ad89dacefdc7ae49cb2d357364c9f/online-proxies/txt/proxies-http.txt
 https://github.com/jetkai/proxy-list/blob/4c1025ddc84457fd88f299fb8cad32cce1649d57/online-proxies/txt/proxies-http.txt
 https://raw.githubusercontent.com/prxchk/proxy-list/main/http.txt
 https://github.com/hoaan1995/discordokkk1/blob/f40cbf36c681fd576350611823f07d8f366ab31b/http_proxies.txt
-https://github.com/jetkai/proxy-list/blob/aba06efe65a3e0d15ae4350bae9391974fff7d64/archive/txt/proxies-http.txt
 https://github.com/tonylturner/WAFlulz/blob/44f89f6fd9fb66e4bb5d30fa44aacd6acfc2a43a/httpproxies.txt
 https://github.com/jetkai/proxy-list/blob/904a519d4ce1058ab3da06a78280103d4684bc8c/archive/txt/proxies-http.txt
 https://github.com/jetkai/proxy-list/blob/ad26b26956650a2d7d9d0ae4e737694eff5dc9f2/online-proxies/txt/proxies-http.txt
