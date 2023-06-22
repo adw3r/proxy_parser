@@ -163,6 +163,7 @@ async def check_proxies():
     checked_proxies_generator: AsyncGenerator = checkers.check_proxies_generator(unchecked_proxies_set)
     clear_file(CHECKED_PROXIES_FILE)
     async for proxy, json_resp in checked_proxies_generator:
+        print(proxy, json_resp)
         append_to_file(CHECKED_PROXIES_FILE, proxy)
 
 
