@@ -6,11 +6,14 @@ The scraper uses github search query "filename:proxies.txt", and saves all links
 
 install requierments with pip
 
+~~~bash
 pip install -r requirements.txt
+~~~
 
 and run!
-
+~~~bash
 python proxy_parser
+~~~
 
 all parsed and checked proxies will save in proxies/parsed.txt. You can change folder if you want in config.ini
 
