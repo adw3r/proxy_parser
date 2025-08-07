@@ -1,172 +1,190 @@
+"""
+Proxy parsing functionality.
+"""
+
 import asyncio
 import itertools
-import os
+import logging
+from typing import List, Set, Dict, Optional, Tuple
 from pathlib import Path
-from typing import NoReturn, Any, AsyncGenerator
 
-import aiohttp
-import requests
-from bs4 import BeautifulSoup
+from proxy_parser.config import REGEX_PATTERN, SEARCH_QUERIES, PATH_TO_SOURCES, DEPTH
+from proxy_parser.http_client import http_client, github_client
+from proxy_parser.file_operations import FileManager
 
-from proxy_parser import checkers
-from proxy_parser.config import REGEX_PATTERN, SEARCH_QUERIES, PATH_TO_SOURCES, DEPTH, NOT_CHECKED_PROXIES_FILE, \
-    SEMAPHORE, CHECKED_PROXIES_FILE
-
-COOKIES = {
-    '_octo': 'GH1.1.2045407306.1670336220',
-    '_device_id': '4080764a6f93b98d37a7aba816e05ad3',
-    'user_session': 'GJ2FquNK2R7LQszFIYzptfpN0wfc8zUgOEk89qHJoPXfzcKh',
-    '__Host-user_session_same_site': 'GJ2FquNK2R7LQszFIYzptfpN0wfc8zUgOEk89qHJoPXfzcKh',
-    'logged_in': 'yes',
-    'dotcom_user': 'adw3r',
-    'color_mode': '%7B%22color_mode%22%3A%22dark%22%2C%22light_theme%22%3A%7B%22name%22%3A%22light%22%2C%22color_mode%22%3A%22light%22%7D%2C%22dark_theme%22%3A%7B%22name%22%3A%22dark_dimmed%22%2C%22color_mode%22%3A%22dark%22%7D%7D',
-    'preferred_color_mode': 'dark',
-    'tz': 'Europe%2FKiev',
-    'has_recent_activity': '1',
-    '_gh_sess': 'q7aH3Q2vx6NV1WTTA0MFUcTzyhObT0evWl5c6LDusWpknBgE5%2B7fUN%2Fot6SUptY9n%2BoPiaXP694p1FIa2FGtOH1Mspzxzjm2bO0xvJDFd3e3jDab2I%2B42HrIBlZ3ZaINaok%2B9pIJuKxfi0U4PEjBuGB4HR764mOpc7glON1NrJ%2FFbXk%2Bn%2FFJWYvRheKTeeotpS7qIGb2sd91zheolHgHgiIJU9R%2FUJlSm20p0dM7TvGx9Vh0NlWRPBMLbfzc6PCV7KnibmO45YF7VAjyzD0OjuVzpMwYcGLvTdMRYY4Xe1SkIOlpJOsHD%2BkyZMFCE3Kc9VmKn%2B%2BXDXRvYAZpmg%3D%3D--Mv%2Bp%2FNXaXIsdeTAY--ZwQfQks6oKqHZvK%2BrkwHsQ%3D%3D',
-}
-HEADERS = {
-    'authority': 'github.com',
-    'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
-    'accept-language': 'ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7',
-    'cache-control': 'max-age=0',
-    'if-none-match': 'W/"3d35da3768d73690629a327321ba5cf3"',
-    'referer': 'https://github.com/',
-    'sec-ch-ua': '"Not.A/Brand";v="8", "Chromium";v="114", "Google Chrome";v="114"',
-    'sec-ch-ua-mobile': '?0',
-    'sec-ch-ua-platform': '"Windows"',
-    'sec-fetch-dest': 'document',
-    'sec-fetch-mode': 'navigate',
-    'sec-fetch-site': 'same-origin',
-    'sec-fetch-user': '?1',
-    'upgrade-insecure-requests': '1',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36',
-}
+logger = logging.getLogger(__name__)
 
 
-async def fetch_source(session, source_link) -> tuple[str | Any, ...] | None:
-    text = None
-    proxies = tuple()
-    try:
-        async with SEMAPHORE:
-            async with session.get(source_link) as response:
-                text = await response.text()
-    except Exception as e:
-        print(e)
-    if text:
-        proxies = tuple(set(proxy.group(1) for proxy in set(REGEX_PATTERN.finditer(text))))
-    return proxies
+class ProxyParser:
+    """Handles proxy parsing operations."""
 
+    def __init__(self, file_manager: FileManager):
+        self.file_manager = file_manager
 
-async def get_proxies(sources_urls: tuple[str]) -> tuple[str]:
-    async with aiohttp.ClientSession() as session:
-        cors = [fetch_source(session, url) for url in sources_urls]
-        proxies: tuple[str] = await asyncio.gather(*cors)
+    async def fetch_source(self, source_link: str) -> Set[str]:
+        """
+        Fetch and parse proxies from a source URL.
+
+        Args:
+            source_link: URL to fetch proxies from
+
+        Returns:
+            Set of found proxy strings
+        """
+        logger.info(f"Fetching proxies from source: {source_link}")
+        start_time = asyncio.get_event_loop().time()
+
+        text = await http_client.get_text(source_link)
+        elapsed_time = asyncio.get_event_loop().time() - start_time
+
+        if not text:
+            logger.warning(f"✗ No content received from {source_link} in {elapsed_time:.2f}s")
+            return set()
+
+        proxies = set()
+        for match in REGEX_PATTERN.finditer(text):
+            proxy = match.group(1)
+            if proxy:
+                proxies.add(proxy)
+
+        logger.info(f"✓ Parsed {len(proxies)} proxies from {source_link} in {elapsed_time:.2f}s")
         return proxies
 
+    async def get_proxies(self, sources_urls: List[str]) -> List[Set[str]]:
+        """
+        Fetch proxies from multiple sources concurrently.
 
-def clear_file(path_to_file):
-    with open(path_to_file, 'w') as f:
-        f.write('')
+        Args:
+            sources_urls: List of URLs to fetch from
 
+        Returns:
+            List of proxy sets from each source
+        """
+        logger.info(f"Fetching proxies from {len(sources_urls)} sources concurrently")
+        start_time = asyncio.get_event_loop().time()
 
-def append_to_file(path_to_file, item: str):
-    with open(path_to_file, 'a') as file:
-        file.write(f'{item}\n')
+        tasks = [self.fetch_source(url) for url in sources_urls]
+        results = await asyncio.gather(*tasks, return_exceptions=True)
 
+        # Filter out exceptions and return valid results
+        valid_results = []
+        failed_count = 0
+        for i, result in enumerate(results):
+            if isinstance(result, Exception):
+                logger.error(f"✗ Failed to fetch from {sources_urls[i]}: {result}")
+                failed_count += 1
+            else:
+                valid_results.append(result)
 
-def append_iterable_to_file(path_to_file: Path, iterable: set):
-    with open(path_to_file, 'a') as file:
-        for line in iterable:
-            file.write(f'\n{line}')
+        elapsed_time = asyncio.get_event_loop().time() - start_time
+        total_proxies = sum(len(proxy_set) for proxy_set in valid_results)
 
+        logger.info(f"✓ Completed fetching from {len(sources_urls)} sources - {len(valid_results)} successful, {failed_count} failed, {total_proxies} total proxies in {elapsed_time:.2f}s")
+        return valid_results
 
-def get_sources_from_github(page: int = 10, query: str = 'filename:proxies.txt') -> list[str] | None:
-    params = {
-        'p': page,
-        # 'o': 'desc',
-        'q': query,
-        # 's': 'indexed',
-        'type': 'code',
-    }
-    try:
-        response = requests.get('https://github.com/search', params=params, cookies=COOKIES, headers=HEADERS,
-                                timeout=10)
-        if not response.ok:
+    def update_sources(self) -> None:
+        """
+        Update source files by searching GitHub for proxy files.
+        """
+        logger.info("Starting GitHub source update")
+        start_time = asyncio.get_event_loop().time()
+
+        total_links = 0
+        successful_searches = 0
+
+        for query, file_name in SEARCH_QUERIES.items():
+            logger.info(f"Searching for {query}")
+            path_to_source = self.file_manager.sources_path / file_name
+
+            all_links = set()
+            for page in range(DEPTH):
+                links_from_github = github_client.search_files(query, page + 1)
+                if links_from_github:
+                    all_links.update(links_from_github)
+                    logger.debug(f"Found {len(links_from_github)} links on page {page + 1} for {query}")
+                else:
+                    logger.debug(f"No links found on page {page + 1} for {query}")
+
+            if all_links:
+                logger.info(f"✓ Found {len(all_links)} total links for {query}")
+                self.file_manager.append_iterable_to_file(path_to_source, all_links)
+                self.file_manager.clean_duplicates(path_to_source)
+                total_links += len(all_links)
+                successful_searches += 1
+            else:
+                logger.warning(f"✗ No links found for query: {query}")
+
+        elapsed_time = asyncio.get_event_loop().time() - start_time
+        logger.info(f"✓ GitHub source update completed - {successful_searches}/{len(SEARCH_QUERIES)} searches successful, {total_links} total links in {elapsed_time:.2f}s")
+
+    async def parse_unchecked_proxies(self) -> Set[str]:
+        """
+        Parse proxies from all source files.
+
+        Returns:
+            Set of all found proxy strings
+        """
+        logger.info("Starting proxy parsing from sources")
+        start_time = asyncio.get_event_loop().time()
+
+        sources_list = self.file_manager.get_files_from_folder(self.file_manager.sources_path)
+        sources_dict = self.file_manager.get_sources_dict(sources_list)
+
+        logger.info(f"Found {len(sources_dict)} source files to parse")
+
+        all_proxies = set()
+
+        for protocol, urls in sources_dict.items():
+            if not urls:
+                logger.warning(f"No URLs found for protocol: {protocol}")
+                continue
+
+            logger.info(f"Parsing {protocol} proxies from {len(urls)} sources")
+            proxy_sets = await self.get_proxies(urls)
+
+            # Combine all proxies from this protocol
+            protocol_proxies = set()
+            for proxy_set in proxy_sets:
+                protocol_proxies.update(proxy_set)
+
+            # Add protocol prefix
+            formatted_proxies = {f'{protocol}://{proxy}' for proxy in protocol_proxies}
+            all_proxies.update(formatted_proxies)
+
+            logger.info(f"✓ Found {len(formatted_proxies)} {protocol} proxies")
+
+        elapsed_time = asyncio.get_event_loop().time() - start_time
+        logger.info(f"✓ Proxy parsing completed - {len(all_proxies)} total proxies found in {elapsed_time:.2f}s")
+        return all_proxies
+
+    async def save_unchecked_proxies(self, proxies: Set[str], file_path: str) -> None:
+        """
+        Save unchecked proxies to file.
+
+        Args:
+            proxies: Set of proxy strings
+            file_path: Path to save proxies to
+        """
+        if not proxies:
+            logger.warning("No proxies to save")
             return
-        soup = BeautifulSoup(response.text, 'lxml')
-        all_a = soup.find_all('a', {'data-testid': 'link-to-search-result'})
-        return [f'https://github.com{a.get("href")}' for a in all_a]
-    except Exception as e:
-        print(e)
-        return
 
+        logger.info(f"Saving {len(proxies)} proxies to {file_path}")
+        self.file_manager.write_lines(Path(file_path), list(proxies))
+        logger.info(f"✓ Saved {len(proxies)} proxies to {file_path}")
 
-def clean_file_from_duplicates(path_to_file: Path | str) -> NoReturn:
-    with open(path_to_file) as file:
-        iterable = set(file.read().split('\n'))
-        if '' in iterable:
-            iterable.remove('')
-    with open(path_to_file, 'w') as file:
-        file.write('\n'.join(iterable))
+    async def get_unchecked_proxies(self, file_path: str) -> Set[str]:
+        """
+        Load unchecked proxies from file.
 
+        Args:
+            file_path: Path to load proxies from
 
-def get_files_from_folder(path_to_folder: Path | str) -> tuple[Path]:
-    return tuple(Path(path_to_folder, str(file)) for file in os.listdir(path_to_folder))
-
-
-def get_links_from_file(path_to_file: Path | str) -> tuple[str]:
-    clean_file_from_duplicates(path_to_file)
-    with open(path_to_file) as file:
-        return tuple(set(file.read().split('\n')))
-
-
-def get_sources_dict(sources_list: tuple[Path]) -> dict[str, tuple]:
-    sources_dict = {}
-    for source_file in sources_list:
-        source_name = source_file.name.removesuffix('.txt')
-        sources_dict[source_name] = tuple(link for link in get_links_from_file(source_file))
-    return sources_dict
-
-
-async def update_sources():
-    for query, file_name in SEARCH_QUERIES.items():
-        print(f'searching for {query}')
-        path_to_source = Path(PATH_TO_SOURCES, file_name)
-        links = []
-        for page in range(DEPTH):
-            links_from_github: list[str] | None = get_sources_from_github(page, query)
-            if links_from_github:
-                links.extend(links_from_github)
-        print(*links, sep='\n')
-        append_iterable_to_file(path_to_source, set(links))
-        clean_file_from_duplicates(path_to_source)
-
-
-async def parse_unchecked_proxies():
-    sources_list: tuple[Path] = get_files_from_folder(PATH_TO_SOURCES)
-    sources_dict: dict[str, tuple] = get_sources_dict(sources_list)
-    unchecked_proxies_set = set()
-    for protocol, urls in sources_dict.items():
-        proxies: tuple[str] = await get_proxies(urls)
-        if proxies:
-            proxies: set[str] = set(itertools.chain.from_iterable([p for p in proxies if p]))
-            print(proxies)
-            unchecked_proxies_set.update(set(f'{protocol}://{proxy}' for proxy in proxies))
-    with open(NOT_CHECKED_PROXIES_FILE, 'w') as file:
-        file.write('\n'.join(unchecked_proxies_set))
-    print('finished to collect proxies')
-
-
-async def check_proxies():
-    unchecked_proxies_set = await get_uncheked_proxies()
-    checked_proxies_generator: AsyncGenerator = checkers.check_proxies_generator(unchecked_proxies_set)
-    clear_file(CHECKED_PROXIES_FILE)
-    async for proxy, json_resp in checked_proxies_generator:
-        print(proxy, json_resp)
-        append_to_file(CHECKED_PROXIES_FILE, proxy)
-
-
-async def get_uncheked_proxies() -> set[str]:
-    with open(NOT_CHECKED_PROXIES_FILE) as file:
-        return set(file.read().strip().split('\n'))
+        Returns:
+            Set of proxy strings
+        """
+        logger.info(f"Loading unchecked proxies from {file_path}")
+        lines = self.file_manager.read_lines(Path(file_path))
+        proxies = {line.strip() for line in lines if line.strip()}
+        logger.info(f"✓ Loaded {len(proxies)} unchecked proxies from {file_path}")
+        return proxies

@@ -1,35 +1,93 @@
+"""
+Proxy checking functionality.
+"""
 import asyncio
-from typing import AsyncGenerator
+import logging
+from typing import AsyncGenerator, Tuple, Optional, Dict, Any
 
-import aiohttp
+from proxy_parser.config import PROXY_CHECK_URL, PROXY_CHECK_TIMEOUT
+from proxy_parser.http_client import http_client
 
-from proxy_parser import config
-
-URL = 'http://ip-api.com/json/?fields=8217'
-
-semaphore = asyncio.BoundedSemaphore(config.MAX_CONNECTIONS)
+logger = logging.getLogger(__name__)
 
 
-async def check_proxy(proxy: str) -> tuple[str, dict] | None:
-    try:
-        async with config.SEMAPHORE:
-            async with aiohttp.ClientSession(timeout=aiohttp.ClientTimeout(10)) as session:
-                async with session.get(URL, proxy=proxy) as response:
-                    json_response = await response.json()
-                    ip = json_response['query']
-                    if ip:
-                        proxy_json_response = proxy, json_response
-                        return proxy_json_response
-    except Exception as e:
-        return None
-
-
-async def check_proxies_generator(proxies: set[str]) -> AsyncGenerator:
-    cors = [check_proxy(proxy) for proxy in proxies]
-    for result in asyncio.as_completed(cors):
+class ProxyChecker:
+    """Handles proxy checking operations."""
+    
+    def __init__(self, timeout: int = PROXY_CHECK_TIMEOUT):
+        self.timeout = timeout
+    
+    async def check_proxy(self, proxy: str) -> Optional[Tuple[str, Dict[str, Any]]]:
+        """
+        Check if a proxy is working.
+        
+        Args:
+            proxy: Proxy string in format protocol://ip:port
+            
+        Returns:
+            Tuple of (proxy, response_data) or None if check failed
+        """
+        logger.debug(f"Checking proxy: {proxy}")
+        start_time = asyncio.get_event_loop().time()
+        
         try:
-            await_p = await result
-            if await_p:
-                yield await_p
-        except Exception as err:
-            yield None
+            json_response = await http_client.get_json(
+                PROXY_CHECK_URL, 
+                proxy=proxy, 
+                timeout=self.timeout
+            )
+            elapsed_time = asyncio.get_event_loop().time() - start_time
+            
+            if json_response and 'query' in json_response:
+                ip = json_response['query']
+                if ip:
+                    logger.debug(f"✓ Proxy {proxy} is working, IP: {ip}, Time: {elapsed_time:.2f}s")
+                    return proxy, json_response
+                else:
+                    logger.debug(f"✗ Proxy {proxy} returned no IP, Time: {elapsed_time:.2f}s")
+            else:
+                logger.debug(f"✗ Proxy {proxy} returned invalid response, Time: {elapsed_time:.2f}s")
+                
+        except Exception as e:
+            elapsed_time = asyncio.get_event_loop().time() - start_time
+            logger.debug(f"✗ Error checking proxy {proxy}: {e}, Time: {elapsed_time:.2f}s")
+        
+        return None
+    
+    async def check_proxies_generator(
+        self, 
+        proxies: set[str]
+    ) -> AsyncGenerator[Tuple[str, Dict[str, Any]], None]:
+        """
+        Check multiple proxies concurrently.
+        
+        Args:
+            proxies: Set of proxy strings
+            
+        Yields:
+            Tuples of (proxy, response_data) for working proxies
+        """
+        logger.info(f"Starting to check {len(proxies)} proxies concurrently")
+        start_time = asyncio.get_event_loop().time()
+        
+        # Create tasks for all proxies
+        tasks = [self.check_proxy(proxy) for proxy in proxies]
+        
+        # Process results as they complete
+        working_count = 0
+        failed_count = 0
+        
+        for result in asyncio.as_completed(tasks):
+            try:
+                proxy_result = await result
+                if proxy_result:
+                    working_count += 1
+                    yield proxy_result
+                else:
+                    failed_count += 1
+            except Exception as e:
+                failed_count += 1
+                logger.error(f"✗ Error in proxy checking task: {e}")
+        
+        elapsed_time = asyncio.get_event_loop().time() - start_time
+        logger.info(f"✓ Proxy checking completed - {working_count} working, {failed_count} failed in {elapsed_time:.2f}s")
