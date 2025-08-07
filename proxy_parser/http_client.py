@@ -2,6 +2,7 @@
 HTTP client utilities for proxy parsing.
 """
 
+import time
 import asyncio
 from typing import Optional, Dict, Any, List
 import httpx
@@ -29,7 +30,7 @@ class HTTPClient:
         Returns:
             Text content or None if request failed
         """
-        logger.info(f"Making GET request to: {url}")
+        logger.debug(f"Making GET request to: {url}")
         start_time = asyncio.get_event_loop().time()
 
         try:
@@ -76,7 +77,7 @@ class HTTPClient:
             JSON response or None if request failed
         """
         proxy_info = f" via {proxy}" if proxy else ""
-        logger.info(f"Making JSON GET request to: {url}{proxy_info}")
+        logger.debug(f"Making JSON GET request to: {url}{proxy_info}")
         start_time = asyncio.get_event_loop().time()
 
         try:
@@ -154,7 +155,6 @@ class GitHubClient:
         Returns:
             List of file URLs or None if search failed
         """
-        import time
 
         start_time = time.time()
         logger.info(f"Searching GitHub for: {query} (page {page})")
