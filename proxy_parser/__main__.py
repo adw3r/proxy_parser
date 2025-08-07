@@ -5,8 +5,8 @@ from proxy_parser import config, parsers
 
 
 async def main():
-    # await parsers.update_sources()
-    # await parsers.parse_unchecked_proxies()
+    await parsers.update_sources()
+    await parsers.parse_unchecked_proxies()
     await parsers.check_proxies()
 
 
