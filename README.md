@@ -1,6 +1,7 @@
 # Proxy Parser
 
-A high-performance, asynchronous proxy scraper and validator that discovers free proxies from GitHub repositories and validates their functionality.
+A high-performance, asynchronous proxy scraper and validator that discovers free proxies from GitHub repositories and
+validates their functionality.
 
 ## 🚀 Features
 
@@ -15,20 +16,22 @@ A high-performance, asynchronous proxy scraper and validator that discovers free
 
 ## 📋 Proxy Support
 
-| Proxy Type | Support Status | Notes |
-|------------|----------------|-------|
-| HTTP       | ✅ Full Support | Native support via `httpx` and `aiohttp` |
-| HTTPS      | ✅ Full Support | Native support via `httpx` and `aiohttp` |
-| SOCKS5     | ✅ Full Support | Supported via `httpx[socks]` |
+| Proxy Type | Support Status | Notes                                                  |
+|------------|----------------|--------------------------------------------------------|
+| HTTP       | ✅ Full Support | Native support via `httpx` and `aiohttp`               |
+| HTTPS      | ✅ Full Support | Native support via `httpx` and `aiohttp`               |
+| SOCKS5     | ✅ Full Support | Supported via `httpx[socks]`                           |
 | SOCKS4     | ⚠️ Limited     | Supported via `aiohttp`, skipped in `httpx` validation |
 
 ## 🛠️ Installation
 
 ### Prerequisites
+
 - Python 3.11 or higher
 - pip or uv package manager
 
 ### Using uv (Recommended)
+
 ```bash
 # Install uv if you haven't already
 curl -LsSf https://astral.sh/uv/install.sh | sh
@@ -40,6 +43,7 @@ uv sync --no-dev
 ```
 
 ### Using pip
+
 ```bash
 git clone <repository-url>
 cd proxyParser
@@ -58,28 +62,30 @@ ProxyCheckTimeout = 5        # Proxy validation timeout (seconds)
 SavePath = ./proxies         # Directory to save proxy files
 MainTimeout = 600            # Seconds between parsing cycles
 ParsingDepth = 7             # Number of GitHub pages to search
-SESSION_COOKIES =            # Optional GitHub session cookies for enhanced access
+GitHubCookies = ''           # Optional GitHub session cookies for enhanced access
 ```
 
 ### Configuration Parameters
 
-| Parameter | Description | Default | Range |
-|-----------|-------------|---------|-------|
-| `Timeout` | HTTP request timeout in seconds | 10 | 1-60 |
-| `MaxConnections` | Maximum concurrent connections | 800 | 100-2000 |
-| `ProxyCheckTimeout` | Proxy validation timeout | 5 | 1-30 |
-| `SavePath` | Output directory for proxy files | `./proxies` | Any valid path |
-| `MainTimeout` | Delay between parsing cycles | 600 | 60-3600 |
-| `ParsingDepth` | GitHub search pages to process | 7 | 1-20 |
+| Parameter           | Description                      | Default     | Range          |
+|---------------------|----------------------------------|-------------|----------------|
+| `Timeout`           | HTTP request timeout in seconds  | 10          | 1-60           |
+| `MaxConnections`    | Maximum concurrent connections   | 800         | 100-2000       |
+| `ProxyCheckTimeout` | Proxy validation timeout         | 5           | 1-30           |
+| `SavePath`          | Output directory for proxy files | `./proxies` | Any valid path |
+| `MainTimeout`       | Delay between parsing cycles     | 600         | 60-3600        |
+| `ParsingDepth`      | GitHub search pages to process   | 7           | 1-10           |
 
 ## 🚀 Usage
 
 ### Run Continuous Mode (Default)
+
 ```bash
 uv run python -m proxy_parser
 ```
 
 This will continuously:
+
 1. 🔍 Search GitHub for proxy files using various queries
 2. 📄 Parse and extract proxy addresses from found sources
 3. ✅ Validate each proxy for functionality
@@ -87,16 +93,19 @@ This will continuously:
 5. ⏱️ Wait for the configured timeout before repeating
 
 ### Run Single Cycle
+
 ```bash
 uv run proxy_parser --single-cycle
 ```
 
 ### Command Line Options
+
 ```bash
 uv run proxy_parser --help
 ```
 
 Available options:
+
 - `--single-cycle`: Run once and exit
 - `--update-sources`: Only update source files
 - `--parse-only`: Only parse proxies without validation
@@ -164,14 +173,15 @@ graph TD
 
 ## 📊 Output Files
 
-| File | Description | Format |
-|------|-------------|--------|
+| File                    | Description                        | Format                   |
+|-------------------------|------------------------------------|--------------------------|
 | `unchecked_proxies.txt` | Raw proxies extracted from sources | `ip:port` (one per line) |
-| `parsed.txt` | Validated, working proxies | `ip:port` (one per line) |
+| `parsed.txt`            | Validated, working proxies         | `ip:port` (one per line) |
 
 ## 🧪 Development
 
 ### Running Tests
+
 ```bash
 pytest tests/
 
@@ -180,6 +190,7 @@ pytest tests/test_checkers.py -v
 ```
 
 ### Code Quality Standards
+
 - **Type Hints**: Full type annotation throughout the codebase
 - **Error Handling**: Comprehensive exception handling with proper logging
 - **Async Patterns**: Modern `async`/`await` patterns for concurrent operations
@@ -187,6 +198,7 @@ pytest tests/test_checkers.py -v
 - **Testing**: Unit tests with `pytest` and `pytest-asyncio`
 
 ### Install development dependencies
+
 ```bash
 uv sync --dev
 ```
@@ -201,6 +213,7 @@ uv sync --dev
 ## 📦 Dependencies
 
 ### Core Dependencies
+
 - **`httpx[socks]`**: Modern async HTTP client with SOCKS proxy support
 - **`aiohttp`**: Alternative async HTTP client for enhanced proxy compatibility
 - **`requests`**: Synchronous HTTP client for GitHub search operations
@@ -209,6 +222,7 @@ uv sync --dev
 - **`loguru`**: Enhanced logging with better formatting and features
 
 ### Development Dependencies
+
 - **`pytest`**: Testing framework
 - **`pytest-asyncio`**: Async testing support
 - **`ruff`**: Fast Python linter
