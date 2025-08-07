@@ -3,16 +3,13 @@ Proxy parsing functionality.
 """
 
 import asyncio
-import itertools
-import logging
-from typing import List, Set, Dict, Optional, Tuple
+from typing import List, Set
 from pathlib import Path
 
-from proxy_parser.config import REGEX_PATTERN, SEARCH_QUERIES, PATH_TO_SOURCES, DEPTH
+from proxy_parser.config import REGEX_PATTERN, SEARCH_QUERIES, DEPTH
 from proxy_parser.http_client import http_client, github_client
 from proxy_parser.file_operations import FileManager
-
-logger = logging.getLogger(__name__)
+from loguru import logger
 
 
 class ProxyParser:
@@ -38,7 +35,9 @@ class ProxyParser:
         elapsed_time = asyncio.get_event_loop().time() - start_time
 
         if not text:
-            logger.warning(f"✗ No content received from {source_link} in {elapsed_time:.2f}s")
+            logger.warning(
+                f"✗ No content received from {source_link} in {elapsed_time:.2f}s"
+            )
             return set()
 
         proxies = set()
@@ -47,7 +46,9 @@ class ProxyParser:
             if proxy:
                 proxies.add(proxy)
 
-        logger.info(f"✓ Parsed {len(proxies)} proxies from {source_link} in {elapsed_time:.2f}s")
+        logger.info(
+            f"✓ Parsed {len(proxies)} proxies from {source_link} in {elapsed_time:.2f}s"
+        )
         return proxies
 
     async def get_proxies(self, sources_urls: List[str]) -> List[Set[str]]:
@@ -79,7 +80,9 @@ class ProxyParser:
         elapsed_time = asyncio.get_event_loop().time() - start_time
         total_proxies = sum(len(proxy_set) for proxy_set in valid_results)
 
-        logger.info(f"✓ Completed fetching from {len(sources_urls)} sources - {len(valid_results)} successful, {failed_count} failed, {total_proxies} total proxies in {elapsed_time:.2f}s")
+        logger.info(
+            f"✓ Completed fetching from {len(sources_urls)} sources - {len(valid_results)} successful, {failed_count} failed, {total_proxies} total proxies in {elapsed_time:.2f}s"
+        )
         return valid_results
 
     def update_sources(self) -> None:
@@ -101,7 +104,9 @@ class ProxyParser:
                 links_from_github = github_client.search_files(query, page + 1)
                 if links_from_github:
                     all_links.update(links_from_github)
-                    logger.debug(f"Found {len(links_from_github)} links on page {page + 1} for {query}")
+                    logger.debug(
+                        f"Found {len(links_from_github)} links on page {page + 1} for {query}"
+                    )
                 else:
                     logger.debug(f"No links found on page {page + 1} for {query}")
 
@@ -115,7 +120,9 @@ class ProxyParser:
                 logger.warning(f"✗ No links found for query: {query}")
 
         elapsed_time = asyncio.get_event_loop().time() - start_time
-        logger.info(f"✓ GitHub source update completed - {successful_searches}/{len(SEARCH_QUERIES)} searches successful, {total_links} total links in {elapsed_time:.2f}s")
+        logger.info(
+            f"✓ GitHub source update completed - {successful_searches}/{len(SEARCH_QUERIES)} searches successful, {total_links} total links in {elapsed_time:.2f}s"
+        )
 
     async def parse_unchecked_proxies(self) -> Set[str]:
         """
@@ -127,7 +134,9 @@ class ProxyParser:
         logger.info("Starting proxy parsing from sources")
         start_time = asyncio.get_event_loop().time()
 
-        sources_list = self.file_manager.get_files_from_folder(self.file_manager.sources_path)
+        sources_list = self.file_manager.get_files_from_folder(
+            self.file_manager.sources_path
+        )
         sources_dict = self.file_manager.get_sources_dict(sources_list)
 
         logger.info(f"Found {len(sources_dict)} source files to parse")
@@ -148,13 +157,15 @@ class ProxyParser:
                 protocol_proxies.update(proxy_set)
 
             # Add protocol prefix
-            formatted_proxies = {f'{protocol}://{proxy}' for proxy in protocol_proxies}
+            formatted_proxies = {f"{protocol}://{proxy}" for proxy in protocol_proxies}
             all_proxies.update(formatted_proxies)
 
             logger.info(f"✓ Found {len(formatted_proxies)} {protocol} proxies")
 
         elapsed_time = asyncio.get_event_loop().time() - start_time
-        logger.info(f"✓ Proxy parsing completed - {len(all_proxies)} total proxies found in {elapsed_time:.2f}s")
+        logger.info(
+            f"✓ Proxy parsing completed - {len(all_proxies)} total proxies found in {elapsed_time:.2f}s"
+        )
         return all_proxies
 
     async def save_unchecked_proxies(self, proxies: Set[str], file_path: str) -> None:

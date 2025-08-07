@@ -1,10 +1,10 @@
 """
 Command-line interface for the proxy parser.
 """
+
 import asyncio
 import argparse
 import sys
-from pathlib import Path
 
 from proxy_parser.config import PATH_TO_SOURCES, PROXIES_PATH, INF_MAIN_TIMEOUT_SECONDS
 from proxy_parser.file_operations import FileManager
@@ -12,12 +12,14 @@ from proxy_parser.orchestrator import ProxyOrchestrator
 from proxy_parser.parsers import ProxyParser
 from loguru import logger
 
+file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
+orchestrator = ProxyOrchestrator(file_manager)
+parser = ProxyParser(file_manager)
+
 
 async def run_single_cycle() -> None:
     """Run a single proxy parsing cycle."""
     try:
-        file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
-        orchestrator = ProxyOrchestrator(file_manager)
         await orchestrator.run_full_cycle()
         logger.info("Single cycle completed successfully")
     except Exception as e:
@@ -28,8 +30,6 @@ async def run_single_cycle() -> None:
 async def run_infinite_cycle(timeout: int = INF_MAIN_TIMEOUT_SECONDS) -> None:
     """Run infinite proxy parsing cycles."""
     try:
-        file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
-        orchestrator = ProxyOrchestrator(file_manager)
         await orchestrator.run_infinite_cycle(timeout)
     except KeyboardInterrupt:
         logger.info("Received interrupt signal, shutting down gracefully")
@@ -41,8 +41,6 @@ async def run_infinite_cycle(timeout: int = INF_MAIN_TIMEOUT_SECONDS) -> None:
 async def update_sources() -> None:
     """Update source files from GitHub."""
     try:
-        file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
-        parser = ProxyParser(file_manager)
         parser.update_sources()
         logger.info("Sources updated successfully")
     except Exception as e:
@@ -53,14 +51,11 @@ async def update_sources() -> None:
 async def parse_proxies() -> None:
     """Parse proxies from existing sources."""
     try:
-        file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
-        parser = ProxyParser(file_manager)
         proxies = await parser.parse_unchecked_proxies()
-        
+
         if proxies:
             await parser.save_unchecked_proxies(
-                proxies, 
-                str(PROXIES_PATH / 'unchecked_proxies.txt')
+                proxies, str(PROXIES_PATH / "unchecked_proxies.txt")
             )
             logger.info(f"Parsed {len(proxies)} proxies successfully")
         else:
@@ -73,8 +68,6 @@ async def parse_proxies() -> None:
 async def check_proxies() -> None:
     """Check existing unchecked proxies."""
     try:
-        file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
-        orchestrator = ProxyOrchestrator(file_manager)
         await orchestrator.check_proxies()
         logger.info("Proxy checking completed")
     except Exception as e:
@@ -84,7 +77,7 @@ async def check_proxies() -> None:
 
 def main() -> None:
     """Main CLI entry point."""
-    parser = argparse.ArgumentParser(
+    arg_parser = argparse.ArgumentParser(
         description="Proxy Parser - Scrape and validate free proxies from GitHub",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
@@ -95,48 +88,40 @@ Examples:
   proxy-parser --parse           # Parse proxies only
   proxy-parser --check           # Check proxies only
   proxy-parser --timeout 300     # Set custom timeout (seconds)
-        """
+        """,
     )
-    
-    parser.add_argument(
-        '--single',
-        action='store_true',
-        help='Run a single parsing cycle and exit'
+
+    arg_parser.add_argument(
+        "--single", action="store_true", help="Run a single parsing cycle and exit"
     )
-    
-    parser.add_argument(
-        '--update-sources',
-        action='store_true',
-        help='Update source files from GitHub only'
+
+    arg_parser.add_argument(
+        "--update-sources",
+        action="store_true",
+        help="Update source files from GitHub only",
     )
-    
-    parser.add_argument(
-        '--parse',
-        action='store_true',
-        help='Parse proxies from existing sources only'
+
+    arg_parser.add_argument(
+        "--parse", action="store_true", help="Parse proxies from existing sources only"
     )
-    
-    parser.add_argument(
-        '--check',
-        action='store_true',
-        help='Check existing unchecked proxies only'
+
+    arg_parser.add_argument(
+        "--check", action="store_true", help="Check existing unchecked proxies only"
     )
-    
-    parser.add_argument(
-        '--timeout',
+
+    arg_parser.add_argument(
+        "--timeout",
         type=int,
         default=INF_MAIN_TIMEOUT_SECONDS,
-        help=f'Timeout between cycles in seconds (default: {INF_MAIN_TIMEOUT_SECONDS})'
+        help=f"Timeout between cycles in seconds (default: {INF_MAIN_TIMEOUT_SECONDS})",
     )
-    
-    parser.add_argument(
-        '--verbose', '-v',
-        action='store_true',
-        help='Enable verbose logging'
+
+    arg_parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose logging"
     )
-    
-    args = parser.parse_args()
-    
+
+    args = arg_parser.parse_args()
+
     # Determine which operation to run
     if args.update_sources:
         asyncio.run(update_sources())
@@ -151,5 +136,5 @@ Examples:
         asyncio.run(run_infinite_cycle(args.timeout))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

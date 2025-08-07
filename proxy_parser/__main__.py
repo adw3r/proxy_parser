@@ -1,6 +1,7 @@
 """
 Main entry point for the proxy parser.
 """
+
 import asyncio
 import sys
 
@@ -34,5 +35,5 @@ async def infinite_main() -> None:
         sys.exit(1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(infinite_main())
