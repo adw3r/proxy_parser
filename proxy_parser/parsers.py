@@ -184,7 +184,7 @@ class ProxyParser:
         self.file_manager.write_lines(Path(file_path), list(proxies))
         logger.info(f"✓ Saved {len(proxies)} proxies to {file_path}")
 
-    async def get_unchecked_proxies(self, file_path: str) -> Set[str]:
+    async def get_unchecked_proxies(self, file_path: str) -> set[str]:
         """
         Load unchecked proxies from file.
 

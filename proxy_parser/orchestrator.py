@@ -80,14 +80,13 @@ class ProxyOrchestrator:
         """
         # Load unchecked proxies
         logger.info("📂 Loading unchecked proxies for validation")
-        unchecked_proxies = await self.parser.get_unchecked_proxies(
+        unchecked_proxies: set[str] = await self.parser.get_unchecked_proxies(
             str(NOT_CHECKED_PROXIES_FILE)
         )
 
         if not unchecked_proxies:
             logger.warning("⚠️ No unchecked proxies to check")
             return
-
         logger.info(f"🔍 Starting validation of {len(unchecked_proxies)} proxies")
 
         # Clear checked proxies file
@@ -101,6 +100,7 @@ class ProxyOrchestrator:
             unchecked_proxies
         ):
             if proxy and response_data:
+                logger.info(f'Proxy = {proxy}, Response = {response_data}')
                 self.file_manager.append_to_file(CHECKED_PROXIES_FILE, proxy)
                 working_count += 1
                 logger.debug(f"✅ Working proxy: {proxy}")

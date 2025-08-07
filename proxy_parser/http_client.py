@@ -10,7 +10,7 @@ import requests
 from bs4 import BeautifulSoup
 from loguru import logger
 
-from proxy_parser.config import SEMAPHORE, DEFAULT_HEADERS
+from proxy_parser.config import SEMAPHORE, DEFAULT_HEADERS, MAX_CONNECTIONS
 
 
 class HTTPClient:
@@ -37,7 +37,7 @@ class HTTPClient:
             async with SEMAPHORE:
                 timeout_config = httpx.Timeout(timeout)
                 async with httpx.AsyncClient(
-                    headers=self.headers, timeout=timeout_config
+                    headers=self.headers, timeout=timeout_config, limits=httpx.Limits(max_connections=MAX_CONNECTIONS, max_keepalive_connections=MAX_CONNECTIONS)
                 ) as client:
                     response = await client.get(url)
                     elapsed_time = asyncio.get_event_loop().time() - start_time
@@ -100,8 +100,10 @@ class HTTPClient:
 
                 async with httpx.AsyncClient(
                     headers=self.headers, 
-                    timeout=timeout_config, 
-                    proxy=proxy_url
+                    timeout=timeout_config,
+                    proxy=proxy_url, limits=httpx.Limits(
+                            max_connections=MAX_CONNECTIONS, max_keepalive_connections=MAX_CONNECTIONS
+                        )
                 ) as client:
                     response = await client.get(url)
                     elapsed_time = asyncio.get_event_loop().time() - start_time

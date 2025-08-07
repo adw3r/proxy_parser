@@ -77,7 +77,7 @@ class ProxyChecker:
         start_time = asyncio.get_event_loop().time()
 
         # Create tasks for all proxies
-        tasks = [self.check_proxy(proxy) for proxy in proxies]
+        tasks = [asyncio.create_task(self.check_proxy(proxy)) for proxy in proxies]
 
         # Process results as they complete
         working_count = 0
