@@ -12,6 +12,16 @@ A robust, async proxy parser that scrapes free proxies from GitHub repositories 
 - **Error Handling**: Robust error handling and recovery
 - **Modular Design**: Clean separation of concerns with dedicated modules
 
+## Proxy Support
+
+The parser supports the following proxy types:
+
+- **HTTP/HTTPS proxies**: Fully supported
+- **SOCKS5 proxies**: Fully supported via httpx[socks]
+- **SOCKS4 proxies**: Not supported (httpx limitation)
+
+SOCKS4 proxies will be automatically skipped during validation with a clear warning message.
+
 ## Installation
 
 ### Using pip
@@ -34,7 +44,7 @@ Edit `config.ini` to customize the behavior:
 [General]
 Timeout = 10
 MaxConnections = 10000
-SavePath = C:\Users\Administrator\Desktop\proxies_api\proxies\
+SavePath = ./proxies
 MainTimeout = 600
 ParsingDepth = 7
 ```
@@ -129,9 +139,10 @@ The parser runs in infinite mode by default, which means it will continuously co
 
 ## Dependencies
 
-- `httpx`: Async HTTP client
+- `httpx[socks]`: Async HTTP client with SOCKS5 support
 - `requests`: Synchronous HTTP client for GitHub search
 - `beautifulsoup4`: HTML parsing
+- `loguru`: Enhanced logging
 - `pytest`: Testing framework
 
 ## License

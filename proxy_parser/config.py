@@ -59,7 +59,7 @@ SEARCH_QUERIES: Dict[str, str] = {
 }
 
 # HTTP client settings
-SESSION_COOKIES = GENERAL.get("SESSION_COOKIES", "")
+SESSION_COOKIES: str = GENERAL.get("SESSION_COOKIES", "")
 DEFAULT_HEADERS: Dict[str, str] = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8",
@@ -72,4 +72,4 @@ DEFAULT_HEADERS: Dict[str, str] = {
 
 # Proxy checking settings
 PROXY_CHECK_URL = "http://ip-api.com/json/?fields=8217"
-PROXY_CHECK_TIMEOUT = 10
+PROXY_CHECK_TIMEOUT = GENERAL.getint("ProxyCheckTimeout", "2")

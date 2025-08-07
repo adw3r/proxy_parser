@@ -3,15 +3,13 @@ HTTP client utilities for proxy parsing.
 """
 
 import asyncio
-import logging
 from typing import Optional, Dict, Any, List
 import httpx
 import requests
 from bs4 import BeautifulSoup
+from loguru import logger
 
 from proxy_parser.config import SEMAPHORE, DEFAULT_HEADERS
-
-logger = logging.getLogger(__name__)
 
 
 class HTTPClient:
@@ -64,7 +62,7 @@ class HTTPClient:
             return None
 
     async def get_json(
-        self, url: str, proxy: Optional[str] = None, timeout: int = 10
+        self, url: str, proxy: str, timeout: int = 10
     ) -> Optional[Dict[str, Any]]:
         """
         Fetch JSON content from URL with optional proxy.
@@ -86,20 +84,18 @@ class HTTPClient:
                 timeout_config = httpx.Timeout(timeout)
 
                 # httpx uses proxy parameter directly
-                proxy_url = None
-                if proxy:
-                    # Handle different proxy schemes
-                    if proxy.startswith(('http://', 'https://')):
-                        proxy_url = proxy
-                    elif proxy.startswith('socks5://'):
-                        # SOCKS5 proxies are now supported with httpx[socks]
-                        proxy_url = proxy
-                    elif proxy.startswith('socks4://'):
-                        # SOCKS4 proxies are now supported with httpx[socks]
-                        proxy_url = proxy
-                    else:
-                        # Assume HTTP proxy
-                        proxy_url = f"http://{proxy}"
+                if proxy.startswith(('http://', 'https://')):
+                    proxy_url = proxy
+                elif proxy.startswith('socks5://'):
+                    # SOCKS5 proxies are supported with httpx[socks]
+                    proxy_url = proxy
+                elif proxy.startswith('socks4://'):
+                    # httpx[socks] doesn't support SOCKS4, skip these
+                    logger.warning(f"✗ JSON GET {url}{proxy_info} - SOCKS4 proxies not supported by httpx, skipping")
+                    return None
+                else:
+                    # Assume HTTP proxy
+                    proxy_url = f"http://{proxy}"
 
                 async with httpx.AsyncClient(
                     headers=self.headers, 
@@ -146,20 +142,6 @@ class GitHubClient:
     def __init__(self):
         self.base_url = "https://github.com/search"
         self.headers = DEFAULT_HEADERS.copy()
-        # Note: In production, these should be configurable and not hardcoded
-        self.cookies = {
-            "_octo": "GH1.1.2045407306.1670336220",
-            "_device_id": "4080764a6f93b98d37a7aba816e05ad3",
-            "user_session": "GJ2FquNK2R7LQszFIYzptfpN0wfc8zUgOEk89qHJoPXfzcKh",
-            "__Host-user_session_same_site": "GJ2FquNK2R7LQszFIYzptfpN0wfc8zUgOEk89qHJoPXfzcKh",
-            "logged_in": "yes",
-            "dotcom_user": "adw3r",
-            "color_mode": "%7B%22color_mode%22%3A%22dark%22%2C%22light_theme%22%3A%7B%22name%22%3A%22light%22%2C%22color_mode%22%3A%22light%22%7D%2C%22dark_theme%22%3A%7B%22name%22%3A%22dark_dimmed%22%2C%22color_mode%22%3A%22dark%22%7D%7D",
-            "preferred_color_mode": "dark",
-            "tz": "Europe%2FKiev",
-            "has_recent_activity": "1",
-            "_gh_sess": "q7aH3Q2vx6NV1WTTA0MFUcTzyhObT0evWl5c6LDusWpknBgE5%2B7fUN%2Fot6SUptY9n%2BoPiaXP694p1FIa2FGtOH1Mspzxzjm2bO0xvJDFd3e3jDab2I%2B42HrIBlZ3ZaINaok%2B9pIJuKxfi0U4PEjBuGB4HR764mOpc7glON1NrJ%2FFbXk%2Bn%2FFJWYvRheKTeeotpS7qIGb2sd91zheolHgHgiIJU9R%2FUJlSm20p0dM7TvGx9Vh0NlWRPBMLbfzc6PCV7KnibmO45YF7VAjyzD0OjuVzpMwYcGLvTdMRYY4Xe1SkIOlpJOsHD%2BkyZMFCE3Kc9VmKn%2B%2BXDXRvYAZpmg%3D%3D--Mv%2Bp%2FNXaXIsdeTAY--ZwQfQks6oKqHZvK%2BrkwHsQ%3D%3D",
-        }
 
     def search_files(self, query: str, page: int = 1) -> Optional[List[str]]:
         """
@@ -187,7 +169,6 @@ class GitHubClient:
             response = requests.get(
                 self.base_url,
                 params=params,
-                cookies=self.cookies,
                 headers=self.headers,
                 timeout=10,
             )
