@@ -1,0 +1,12 @@
+[project]
+name = "proxy-parser"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "aiohttp>=3.12.15",
+    "bs4>=0.0.2",
+    "pytest>=8.4.1",
+    "requests>=2.32.4",
+]
