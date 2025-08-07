@@ -16,7 +16,6 @@ class TestProxyChecker:
         """Create a ProxyChecker instance."""
         return ProxyChecker()
 
-    @pytest.mark.asyncio
     async def test_check_proxy_success(self, checker):
         """Test successful proxy check."""
         mock_response = {"query": "192.168.1.1", "status": "success"}
@@ -32,7 +31,6 @@ class TestProxyChecker:
             assert proxy == "http://192.168.1.1:8080"
             assert response is mock_response
 
-    @pytest.mark.asyncio
     async def test_check_proxy_no_ip(self, checker):
         """Test proxy check with no IP in response."""
         mock_response = {"query": "", "status": "success"}
@@ -45,7 +43,6 @@ class TestProxyChecker:
 
             assert result is None
 
-    @pytest.mark.asyncio
     async def test_check_proxy_invalid_response(self, checker):
         """Test proxy check with invalid response."""
         with patch("proxy_parser.checkers.http_client") as mock_client:
@@ -56,7 +53,6 @@ class TestProxyChecker:
 
             assert result is None
 
-    @pytest.mark.asyncio
     async def test_check_proxy_exception(self, checker):
         """Test proxy check with exception."""
         with patch("proxy_parser.checkers.http_client") as mock_client:
@@ -67,7 +63,6 @@ class TestProxyChecker:
 
             assert result is None
 
-    @pytest.mark.asyncio
     async def test_check_proxies_generator(self, checker):
         """Test checking multiple proxies."""
         proxies = {"http://192.168.1.1:8080", "http://10.0.0.1:3128"}
@@ -87,7 +82,6 @@ class TestProxyChecker:
             assert results[0] == mock_responses[0]
             assert results[1] == mock_responses[1]
 
-    @pytest.mark.asyncio
     async def test_check_proxies_generator_with_failures(self, checker):
         """Test checking proxies with some failures."""
         proxies = {"http://192.168.1.1:8080", "http://10.0.0.1:3128"}

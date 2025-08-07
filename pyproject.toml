@@ -24,17 +24,14 @@ dependencies = [
     "lxml>=4.9.0",
     "requests>=2.32.4",
     "loguru",
+    "aiohttp>=3.12.15",
 ]
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = [
     "pytest>=8.4.1",
     "pytest-asyncio>=0.24.0",
-    "black>=24.0.0",
-    "isort>=5.13.0",
-    "mypy>=1.8.0",
-    "flake8>=7.0.0",
-    "ruff"
+    "ruff",
 ]
 
 [tool.pytest.ini_options]

@@ -25,7 +25,6 @@ class TestProxyParser:
         """Create a ProxyParser instance."""
         return ProxyParser(mock_file_manager)
 
-    @pytest.mark.asyncio
     async def test_fetch_source_empty_response(self, parser):
         """Test fetching from source with empty response."""
         with patch("proxy_parser.parsers.http_client") as mock_client:
@@ -37,7 +36,6 @@ class TestProxyParser:
             assert result == set()
             mock_client.get_text.assert_called_once_with("http://example.com")
 
-    @pytest.mark.asyncio
     async def test_fetch_source_with_proxies(self, parser):
         """Test fetching from source with proxy data."""
         sample_text = "Some text with proxy 192.168.1.1:8080 and 10.0.0.1:3128"
@@ -51,7 +49,6 @@ class TestProxyParser:
             expected = {"192.168.1.1:8080", "10.0.0.1:3128"}
             assert result == expected
 
-    @pytest.mark.asyncio
     async def test_get_proxies_success(self, parser):
         """Test getting proxies from multiple sources."""
         urls = ["http://source1.com", "http://source2.com"]
@@ -68,7 +65,6 @@ class TestProxyParser:
             assert result[0] == {"192.168.1.1:8080", "10.0.0.1:3128"}
             assert result[1] == {"172.16.0.1:9090"}
 
-    @pytest.mark.asyncio
     async def test_get_proxies_with_exceptions(self, parser):
         """Test getting proxies with some sources failing."""
         urls = ["http://source1.com", "http://source2.com"]

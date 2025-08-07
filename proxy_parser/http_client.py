@@ -1,7 +1,7 @@
 """
 HTTP client utilities for proxy parsing.
 """
-
+import aiohttp as aio
 import time
 import asyncio
 from typing import Optional, Dict, Any, List
@@ -82,37 +82,29 @@ class HTTPClient:
 
         try:
             async with SEMAPHORE:
-                timeout_config = httpx.Timeout(timeout)
+                timeout_config = aio.ClientTimeout(total=timeout)
 
                 # httpx uses proxy parameter directly
-                if proxy.startswith(('http://', 'https://')):
+                if proxy.startswith(('http://', 'https://', 'socks5://', 'socks4://')):
                     proxy_url = proxy
-                elif proxy.startswith('socks5://'):
-                    # SOCKS5 proxies are supported with httpx[socks]
-                    proxy_url = proxy
-                elif proxy.startswith('socks4://'):
-                    # httpx[socks] doesn't support SOCKS4, skip these
-                    logger.warning(f"✗ JSON GET {url}{proxy_info} - SOCKS4 proxies not supported by httpx, skipping")
-                    return None
                 else:
                     # Assume HTTP proxy
                     proxy_url = f"http://{proxy}"
 
-                async with httpx.AsyncClient(
+                async with aio.ClientSession(
                     headers=self.headers, 
                     timeout=timeout_config,
-                    proxy=proxy_url, limits=httpx.Limits(
-                            max_connections=MAX_CONNECTIONS, max_keepalive_connections=MAX_CONNECTIONS
-                        )
+                    proxy=proxy_url
                 ) as client:
                     response = await client.get(url)
                     elapsed_time = asyncio.get_event_loop().time() - start_time
 
-                    if response.status_code == 200:
+                    status = response.status
+                    if status == 200:
                         try:
-                            json_data = response.json()
+                            json_data = await response.json()
                             logger.info(
-                                f"✓ JSON GET {url}{proxy_info} - Status: {response.status_code}, Time: {elapsed_time:.2f}s"
+                                f"✓ JSON GET {url}{proxy_info} - Status: {status}, Time: {elapsed_time:.2f}s"
                             )
                             return json_data
                         except Exception as e:
@@ -122,7 +114,7 @@ class HTTPClient:
                             return None
                     else:
                         logger.warning(
-                            f"✗ JSON GET {url}{proxy_info} - Status: {response.status_code}, Time: {elapsed_time:.2f}s"
+                            f"✗ JSON GET {url}{proxy_info} - Status: {status}, Time: {elapsed_time:.2f}s"
                         )
                         return None
         except httpx.TimeoutException:
