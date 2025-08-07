@@ -76,7 +76,7 @@ SESSION_COOKIES =            # Optional GitHub session cookies for enhanced acce
 
 ### Run Continuous Mode (Default)
 ```bash
-uv run proxy_parser
+uv run python -m proxy_parser
 ```
 
 This will continuously:
