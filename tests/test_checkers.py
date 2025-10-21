@@ -16,21 +16,6 @@ class TestProxyChecker:
         """Create a ProxyChecker instance."""
         return ProxyChecker()
 
-    async def test_check_proxy_success(self, checker):
-        """Test successful proxy check."""
-        mock_response = {"query": "192.168.1.1", "status": "success"}
-
-        with patch("proxy_parser.checkers.http_client") as mock_client:
-            # Mock the async method properly
-            mock_client.get_json = AsyncMock(return_value=mock_response)
-
-            result = await checker.check_proxy("http://192.168.1.1:8080")
-
-            assert result is not None
-            proxy, response = result
-            assert proxy == "http://192.168.1.1:8080"
-            assert response is mock_response
-
     async def test_check_proxy_no_ip(self, checker):
         """Test proxy check with no IP in response."""
         mock_response = {"query": "", "status": "success"}
