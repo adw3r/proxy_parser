@@ -2,14 +2,16 @@
 Proxy checking functionality.
 """
 
-import asyncio
 import logging
-from typing import AsyncGenerator, Tuple, Optional, Dict, Any
+from typing import AsyncGenerator, Any
+import time
+import asyncio
 
 from proxy_parser.config import PROXY_CHECK_URL, PROXY_CHECK_TIMEOUT
 from proxy_parser.http_client import http_client
 
 logger = logging.getLogger(__name__)
+
 
 
 class ProxyChecker:
@@ -18,7 +20,7 @@ class ProxyChecker:
     def __init__(self, timeout: int = PROXY_CHECK_TIMEOUT):
         self.timeout = timeout
 
-    async def check_proxy(self, proxy: str) -> tuple[str, dict[str, Any], float] | None:
+    async def check_proxy(self, proxy: str) -> tuple[str, dict[str, Any]] | None:
         """
         Check if a proxy is working.
 
@@ -29,13 +31,13 @@ class ProxyChecker:
             Tuple of (proxy, response_data) or None if check failed
         """
         logger.debug(f"Checking proxy: {proxy}")
-        start_time = asyncio.get_event_loop().time()
+        start = time.perf_counter()
 
         try:
             json_response = await http_client.get_json(
                 PROXY_CHECK_URL, proxy=proxy, timeout=self.timeout
             )
-            elapsed_time: float = asyncio.get_event_loop().time() - start_time
+            elapsed_time = time.perf_counter() - start
 
             if json_response and "query" in json_response:
                 ip = json_response["query"]
@@ -54,7 +56,8 @@ class ProxyChecker:
                 )
 
         except Exception as e:
-            elapsed_time = asyncio.get_event_loop().time() - start_time
+            elapsed_time = time.perf_counter() - start
+
             logger.debug(
                 f"✗ Error checking proxy {proxy}: {e}, Time: {elapsed_time:.2f}s"
             )
@@ -77,7 +80,7 @@ class ProxyChecker:
         start_time = asyncio.get_event_loop().time()
 
         # Create tasks for all proxies
-        tasks = [self.check_proxy(proxy) for proxy in proxies]
+        tasks = [asyncio.create_task(self.check_proxy(proxy)) for proxy in proxies]
 
         # Process results as they complete
         working_count = 0
