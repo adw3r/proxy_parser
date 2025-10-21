@@ -8,7 +8,7 @@ import logging
 from proxy_parser.config import NOT_CHECKED_PROXIES_FILE, CHECKED_PROXIES_FILE
 from proxy_parser.parsers import ProxyParser
 from proxy_parser.checkers import ProxyChecker
-from proxy_parser.file_operations import FileManager
+from proxy_parser.file_operations import FileManager, FileManagerJson
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 class ProxyOrchestrator:
     """Orchestrates the entire proxy parsing workflow."""
 
-    def __init__(self, file_manager: FileManager):
+    def __init__(self, file_manager: FileManagerJson):
         self.file_manager = file_manager
         self.parser = ProxyParser(file_manager)
         self.checker = ProxyChecker()
@@ -96,12 +96,12 @@ class ProxyOrchestrator:
         working_count = 0
         start_time = asyncio.get_event_loop().time()
 
-        async for proxy, response_data in self.checker.check_proxies_generator(
+        async for proxy, response_data, elapsed_time_of_proxy in self.checker.check_proxies_generator(
             unchecked_proxies
         ):
             if proxy and response_data:
                 logger.info(f'Proxy = {proxy}, Response = {response_data}')
-                self.file_manager.append_to_file(CHECKED_PROXIES_FILE, proxy)
+                self.file_manager.append_to_file(CHECKED_PROXIES_FILE, {'proxy': proxy, 'info': response_data, 'elapsed_time': elapsed_time_of_proxy})
                 working_count += 1
                 logger.debug(f"✅ Working proxy: {proxy}")
 

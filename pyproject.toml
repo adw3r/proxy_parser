@@ -25,6 +25,7 @@ dependencies = [
     "requests>=2.32.4",
     "loguru",
     "aiohttp>=3.12.15",
+    "orjson>=3.11.3",
 ]
 
 [dependency-groups]

@@ -7,12 +7,12 @@ import argparse
 import sys
 
 from proxy_parser.config import PATH_TO_SOURCES, PROXIES_PATH, INF_MAIN_TIMEOUT_SECONDS
-from proxy_parser.file_operations import FileManager
+from proxy_parser.file_operations import FileManager, FileManagerJson
 from proxy_parser.orchestrator import ProxyOrchestrator
 from proxy_parser.parsers import ProxyParser
 from loguru import logger
 
-file_manager = FileManager(PATH_TO_SOURCES, PROXIES_PATH)
+file_manager = FileManagerJson(PATH_TO_SOURCES, PROXIES_PATH)
 orchestrator = ProxyOrchestrator(file_manager)
 parser = ProxyParser(file_manager)
 

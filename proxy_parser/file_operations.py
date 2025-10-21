@@ -1,10 +1,11 @@
 """
 File operations for proxy parsing.
 """
-
-from loguru import logger
+from typing import List
 from pathlib import Path
-from typing import Set, List, Dict
+
+import orjson
+from loguru import logger
 
 
 class FileManager:
@@ -48,7 +49,7 @@ class FileManager:
         except Exception as e:
             logger.error(f"Error appending to file {file_path}: {e}")
 
-    def append_iterable_to_file(self, file_path: Path, iterable: Set[str]) -> None:
+    def append_iterable_to_file(self, file_path: Path, iterable: set[str]) -> None:
         """
         Append multiple items to a file.
 
@@ -64,7 +65,7 @@ class FileManager:
         except Exception as e:
             logger.error(f"Error appending to file {file_path}: {e}")
 
-    def read_lines(self, file_path: Path) -> List[str]:
+    def read_lines(self, file_path: Path) -> list[str]:
         """
         Read all lines from a file.
 
@@ -137,7 +138,7 @@ class FileManager:
             logger.error(f"Error getting files from folder {folder_path}: {e}")
             return []
 
-    def get_sources_dict(self, sources_list: List[Path]) -> Dict[str, List[str]]:
+    def get_sources_dict(self, sources_list: list[Path]) -> dict[str, list[str]]:
         """
         Create a dictionary mapping source names to their URLs.
 
@@ -158,3 +159,41 @@ class FileManager:
                 logger.error(f"Error processing source file {source_file}: {e}")
 
         return sources_dict
+
+
+class FileManagerJson(FileManager):
+    """Manages file operations for JSONL files (one JSON object per line)."""
+
+    def __init__(self, sources_path: Path, jsonl_file_path: Path):
+        self.jsonl_file_path = jsonl_file_path
+        super().__init__(sources_path, jsonl_file_path)
+
+    def append_to_file(self, file_path: Path, content: dict) -> None:
+        """Append a single JSON object as a JSONL line."""
+        target_path = file_path or self.jsonl_file_path
+        try:
+            with target_path.open("ab") as file:
+                file.write(orjson.dumps(content))
+                file.write(b"\n")
+            logger.debug(f"Appended JSONL record to: {target_path}")
+        except Exception as e:
+            logger.error(f"Error appending JSONL to {target_path}: {e}")
+
+    def read_json(self, file_path: Path) -> list[dict]:
+        """Read a JSONL file into a list of dicts. Returns empty list on error/missing file."""
+        target_path = file_path or self.jsonl_file_path
+        try:
+            if not target_path.exists():
+                logger.warning(f"File does not exist: {target_path}")
+                return []
+            with target_path.open("rb") as file:
+                records: list[dict] = []
+                for line in file:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    records.append(orjson.loads(line))
+                return records
+        except Exception as e:
+            logger.error(f"Error reading JSONL from {target_path}: {e}")
+            return []
