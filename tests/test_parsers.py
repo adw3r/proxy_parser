@@ -7,7 +7,7 @@ from unittest.mock import Mock, patch, AsyncMock
 from pathlib import Path
 
 from proxy_parser.parsers import ProxyParser
-from proxy_parser.file_operations import FileManager
+from proxy_parser.file_operations import FileManager, FileManagerJson
 
 
 class TestProxyParser:
@@ -16,7 +16,7 @@ class TestProxyParser:
     @pytest.fixture
     def mock_file_manager(self):
         """Create a mock file manager."""
-        mock = Mock(spec=FileManager)
+        mock = Mock(spec=FileManagerJson)
         mock.sources_path = Path("/tmp/sources")
         return mock
 

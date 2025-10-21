@@ -18,7 +18,7 @@ class ProxyChecker:
     def __init__(self, timeout: int = PROXY_CHECK_TIMEOUT):
         self.timeout = timeout
 
-    async def check_proxy(self, proxy: str) -> Optional[Tuple[str, Dict[str, Any]]]:
+    async def check_proxy(self, proxy: str) -> tuple[str, dict[str, Any], float] | None:
         """
         Check if a proxy is working.
 
@@ -35,7 +35,7 @@ class ProxyChecker:
             json_response = await http_client.get_json(
                 PROXY_CHECK_URL, proxy=proxy, timeout=self.timeout
             )
-            elapsed_time = asyncio.get_event_loop().time() - start_time
+            elapsed_time: float = asyncio.get_event_loop().time() - start_time
 
             if json_response and "query" in json_response:
                 ip = json_response["query"]
@@ -43,7 +43,7 @@ class ProxyChecker:
                     logger.debug(
                         f"✓ Proxy {proxy} is working, IP: {ip}, Time: {elapsed_time:.2f}s"
                     )
-                    return proxy, json_response
+                    return proxy, json_response, elapsed_time
                 else:
                     logger.debug(
                         f"✗ Proxy {proxy} returned no IP, Time: {elapsed_time:.2f}s"
@@ -63,7 +63,7 @@ class ProxyChecker:
 
     async def check_proxies_generator(
         self, proxies: set[str]
-    ) -> AsyncGenerator[Tuple[str, Dict[str, Any]], None]:
+    ) -> AsyncGenerator[tuple[str, dict[str, Any], float], None]:
         """
         Check multiple proxies concurrently.
 

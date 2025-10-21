@@ -20,7 +20,7 @@ PROXIES_PATH: Path = Path(ROOT_FOLDER / "proxies")
 PROXIES_PATH.mkdir(parents=True, exist_ok=True)
 
 NOT_CHECKED_PROXIES_FILE = Path(PROXIES_PATH, "unchecked_proxies.txt")
-CHECKED_PROXIES_FILE = Path(PROXIES_PATH, "parsed.txt")
+CHECKED_PROXIES_FILE = Path(PROXIES_PATH, "parsed.jsonl")
 
 # Network settings
 MAX_CONNECTIONS: int = GENERAL.getint("MaxConnections", "1000")
